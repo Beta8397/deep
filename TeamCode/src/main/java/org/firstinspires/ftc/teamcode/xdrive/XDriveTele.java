@@ -1,0 +1,89 @@
+package org.firstinspires.ftc.teamcode.xdrive;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.util.Pose;
+import org.firstinspires.ftc.teamcode.util.Toggle;
+
+@TeleOp
+public class XDriveTele extends LinearOpMode {
+
+    protected XDrive bot = null;
+
+    private Toggle toggleA1 = new Toggle(()-> gamepad1.a);
+    private  Toggle toggleB1 = new Toggle(()-> gamepad1.b);
+    private Toggle toggleX1 = new Toggle(()-> gamepad1.x);
+    private Toggle toggleY1 = new Toggle(()-> gamepad1.y);
+    boolean slowMode = true;
+    double speedDivider = 4;
+    boolean fieldcentric = false;
+
+    public void runOpMode(){
+        bot = new XDrive();
+        bot.init(hardwareMap);
+        bot.setPose(0, 0, 0);
+
+        while (opModeInInit()){
+            if (toggleB1.update()){
+                Alliance.alliance = Alliance.alliance == Alliance.BLUE? Alliance.RED:Alliance.BLUE;
+            }
+            telemetry.addData("ALLIANCE", Alliance.alliance);
+            telemetry.update();
+        }
+        toggleB1.update();
+
+        while (opModeIsActive()){
+            oneDriveCycle();
+            telemetry.update();
+        }
+    }
+
+    protected void oneDriveCycle(){
+        if (toggleA1.update()){
+            slowMode = !slowMode;
+            if (slowMode){
+                speedDivider = 4;
+            }else {
+                speedDivider = 1;
+            }
+        }
+        if (toggleB1.update()){
+            fieldcentric = !fieldcentric;
+        }
+        bot.updateOdometry();
+        Pose pose = bot.getPose();
+        if (toggleX1.update()){
+            double newHeading = Alliance.alliance == Alliance.BLUE? 0 : 180;
+            bot.setPose(pose.x, pose.y, newHeading);
+            pose = bot.getPose();
+        }
+        double gpx = gamepad1.left_stick_x;
+        double gpy = -gamepad1.left_stick_y;
+        double gpa = gamepad1.left_trigger - gamepad1.right_trigger;
+        double pxr, pyr, pa;
+        pa = gpa/speedDivider;
+        if (fieldcentric){
+            double px = (Alliance.alliance==Alliance.BLUE? gpy : -gpy)/speedDivider;
+            double py = (Alliance.alliance==Alliance.BLUE? -gpx : +gpx)/speedDivider;
+            double cos = Math.cos(pose.h);
+            double sin = Math.sin(pose.h);
+            pxr = px * sin - py * cos;
+            pyr = px * cos + py * sin;
+        }else {
+            pxr = gpx / speedDivider;
+            pyr = gpy / speedDivider;
+        }
+        bot.setDrivePower(pxr, pyr, pa);
+        telemetry.addData("SlowMode", slowMode);
+        telemetry.addData("fieldCentric", fieldcentric);
+        telemetry.addData("Pos","x %.1f y %.1f h %.1f", pose.x, pose.y,
+                Math.toDegrees(pose.h));
+        telemetry.addData("raw degrees",
+                bot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+        telemetry.addData("Heading offset", Math.toDegrees(bot.headingOffsetRadians));
+    }
+
+}
