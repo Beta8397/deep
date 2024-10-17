@@ -15,15 +15,18 @@ public class TestDeepArm extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()){
-            double currentArmTargetAngle = bot.getTargetArmAngle();
-            double currentArmTargetLength = bot.getTargetArmLength();
-            double angleIncrement = gamepad1.left_stick_y * 0.02;
-            double lengthIncrement = -gamepad1.right_stick_y * 0.02;
-            bot.setTargetArmAngle(currentArmTargetAngle + angleIncrement);
-            bot.setTargetArmLength(currentArmTargetLength + lengthIncrement);
+            double currentArmLength = bot.getArmLength();
+            double currentArmAngle = bot.getArmAngle();
+            double targetArmLength = bot.getTargetArmLength();
+            double targetArmAngle = bot.getTargetArmAngle();
+            bot.setTargetArmAngle(targetArmAngle + gamepad1.left_stick_y * 0.5);
+            bot.setTargetArmLength(targetArmLength - gamepad1.right_stick_y * 0.2);
             bot.updateArm();
-            telemetry.addData("targetangle", currentArmTargetAngle);
-            telemetry.addData("targetlength", currentArmTargetLength);
+
+            telemetry.addData("targetangle", targetArmAngle);
+            telemetry.addData("targetlength", targetArmLength);
+            telemetry.addData("armdegrees", currentArmAngle);
+            telemetry.addData("slideinches", currentArmLength);
             telemetry.update();
         }
     }

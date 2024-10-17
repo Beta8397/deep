@@ -19,11 +19,12 @@ public class DeepBot extends XDrive {
     public static final int SLIDE_MAX = 3000;
     public static final double ARM_TICKS_PER_DEGREE = 3.9;
     public static final double MIN_ARM_DEGREES = -15;
-    public static final double MAX_ARM_DEGREES = 95;
+    public static final double MAX_ARM_DEGREES = 70;
     public static final double SLIDE_BASE_LENGTH = 18.5;    // includes claw
     public static final double SLIDE_TICKS_PER_INCH = 114.04;
     public static final double MAX_SLIDE_LENGTH = 44.5; // includes claw
     public static final double SAFE_SLIDE_LENGTH = 37.5;    // includes claw
+    public static final double SAFE_ARM_ANGLE = Math.toDegrees( Math.acos(SAFE_SLIDE_LENGTH/MAX_SLIDE_LENGTH));
 
     private double targetArmLength = SLIDE_BASE_LENGTH;
     private double targetArmAngle = MIN_ARM_DEGREES;
@@ -52,7 +53,8 @@ public class DeepBot extends XDrive {
 
     public double setTargetArmLength(double inches){
         inches = Range.clip(inches, SLIDE_BASE_LENGTH, MAX_SLIDE_LENGTH);
-        targetArmLength = SAFE_SLIDE_LENGTH/Math.cos(Math.toRadians(targetArmAngle));
+        inches = Math.min(inches, SAFE_SLIDE_LENGTH / Math.cos(Math.toRadians( targetArmAngle )));
+        targetArmLength= inches;
         return targetArmLength;
     }
 
@@ -74,21 +76,13 @@ public class DeepBot extends XDrive {
         int targetSlideTicks = (int)slideTicksFromInches(inches);
         armMotor.setTargetPosition(targetArmTicks);
         slideMotor.setTargetPosition(targetSlideTicks);
-        armMotor.setPower(0.5);
-        slideMotor.setPower(0.5);
+        armMotor.setPower(1.0);
+        slideMotor.setPower(1.0);
     }
 
     public void updateArm(){
-        int currentArmTicks = armMotor.getCurrentPosition();
-        int currentSlideTicks = slideMotor.getCurrentPosition();
-        double currentArmLength = armInchesFromTicks(currentSlideTicks);
-        double currentArmDegrees = armDegreesFromTicks(currentArmTicks);
-        if (currentArmLength > SAFE_SLIDE_LENGTH/Math.cos(Math.toRadians(targetArmAngle))
-        || currentArmLength > SAFE_SLIDE_LENGTH/Math.cos(Math.toRadians(currentArmDegrees))){
-            seekArmTargets(currentArmDegrees, targetArmLength);
-        }else {
-            seekArmTargets(targetArmAngle, targetArmLength);
-        }
+        seekArmTargets(targetArmAngle, targetArmLength);
+
     }
 
     public double armTicksFromDegrees(double degrees){
@@ -105,6 +99,14 @@ public class DeepBot extends XDrive {
 
     public double armInchesFromTicks(int ticks){
         return SLIDE_BASE_LENGTH + ticks/ SLIDE_TICKS_PER_INCH;
+    }
+
+    public double getArmAngle(){
+        return armDegreesFromTicks(armMotor.getCurrentPosition());
+    }
+
+    public double getArmLength(){
+        return armInchesFromTicks(slideMotor.getCurrentPosition());
     }
 
     public void setLiftTilt(int pos){
