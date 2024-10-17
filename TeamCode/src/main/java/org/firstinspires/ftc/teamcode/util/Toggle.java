@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.util;
 
 public class Toggle {
+    public static Object Mode;
     Predicate predicate;
 
     private boolean prevValue = false;
@@ -8,6 +9,7 @@ public class Toggle {
     public Toggle(Predicate pred){
         predicate = pred;
     }
+
 
     public boolean update(){
         boolean value = predicate.test();
