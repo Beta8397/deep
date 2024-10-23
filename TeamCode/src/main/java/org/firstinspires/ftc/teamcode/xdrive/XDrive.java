@@ -2,10 +2,12 @@ package org.firstinspires.ftc.teamcode.xdrive;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.util.Localizer;
 import org.firstinspires.ftc.teamcode.util.Pose;
 
 import java.util.List;
@@ -26,6 +28,8 @@ public class XDrive {
     private int ticksBL = 0, ticksFL = 0, ticksFR = 0, ticksBR = 0;
     private Pose pose = new Pose(0, 0, 0);
     private Pose velocity = new Pose(0, 0, 0);
+
+    public Localizer localizer;
 
     public void init(HardwareMap hwMap){
 
@@ -69,40 +73,20 @@ public class XDrive {
                 new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.RIGHT, RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
         ElapsedTime et = new ElapsedTime();
         while (et.milliseconds() < 150 && !Thread.currentThread().isInterrupted()) continue;
+
+
+        localizer = new DriveLocalizer();
     }
 
-    private void setHeadingRadians(double headingRadians){
-        double rawHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-        headingOffsetRadians = AngleUnit.normalizeRadians(headingRadians - rawHeading);
-    }
 
-    private double getHeadingRadians(){
-        double rawHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-        return AngleUnit.normalizeRadians(headingOffsetRadians + rawHeading);
-    }
-
-    public Pose getPose(){ return pose; }
+    public Pose getPose(){ return localizer.getPose(); }
 
     public void setPose(double x, double y, double hDegrees){
-        double hRadians = Math.toRadians(hDegrees);
-        setHeadingRadians(hRadians);
-        ticksBL = bl.getCurrentPosition();
-        ticksFL = fl.getCurrentPosition();
-        ticksFR = fr.getCurrentPosition();
-        ticksBR = br.getCurrentPosition();
-        pose = new Pose(x, y, hRadians);
-    }
-
-    public void setPose(double x, double y){
-        ticksBL = bl.getCurrentPosition();
-        ticksFL = fl.getCurrentPosition();
-        ticksFR = fr.getCurrentPosition();
-        ticksBR = br.getCurrentPosition();
-        pose = new Pose(x, y, pose.h);
+        localizer.setPose(x, y, hDegrees);
     }
 
     public Pose getVelocity(){
-        return velocity;
+        return localizer.getVelocity();
     }
 
     public void setDrivePower(double px, double py, double pa){
@@ -137,52 +121,141 @@ public class XDrive {
     }
 
     public void updateOdometry(){
-        int currTicksBL = bl.getCurrentPosition();
-        int currTicksFL = fl.getCurrentPosition();
-        int currTicksFR = fr.getCurrentPosition();
-        int currTicksBR = br.getCurrentPosition();
-
-        int newBL = currTicksBL - ticksBL;
-        int newFL = currTicksFL - ticksFL;
-        int newFR = currTicksFR - ticksFR;
-        int newBR = currTicksBR - ticksBR;
-
-        ticksBL = currTicksBL;
-        ticksFL = currTicksFL;
-        ticksFR = currTicksFR;
-        ticksBR = currTicksBR;
-
-        double dXR = 0.25 * (-newBL + newFL - newFR + newBR) / (TICKS_PER_INCH * STRAFE_RATIO);
-        double dYR = 0.25 * (newBL + newFL + newFR + newBR) / TICKS_PER_INCH;
-
-        double heading = getHeadingRadians();
-        double deltaHeading = AngleUnit.normalizeRadians(heading - pose.h);
-        double avgHeading = AngleUnit.normalizeRadians(pose.h + deltaHeading/2.0);
-        double sinAvg = Math.sin(avgHeading);
-        double cosAvg = Math.cos(avgHeading);
-
-        double dX = dXR * sinAvg + dYR * cosAvg;
-        double dY = -dXR * cosAvg + dYR * sinAvg;
-
-        pose = new Pose(pose.x + dX, pose.y + dY, heading);
-
-        double vBL = bl.getVelocity();
-        double vFL = fl.getVelocity();
-        double vFR = fr.getVelocity();
-        double vBR = br.getVelocity();
-
-        double vXR = 0.25 * (-vBL + vFL - vFR + vBR) / (TICKS_PER_INCH * STRAFE_RATIO);
-        double vYR = 0.25 * (vBL + vFL + vFR + vBR) / TICKS_PER_INCH;
-
-        double sin = Math.sin(pose.h);
-        double cos = Math.cos(pose.h);
-
-        double vX = vXR * sin + vYR * cos;
-        double vY = -vXR * cos + vYR * sin;
-
-        double vA = imu.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
-
-        velocity = new Pose(vX, vY, vA);
+        localizer.update();
     }
+
+    public class OtosLocalizer implements Localizer {
+        public SparkFunOTOS otos;
+        public Pose pose = new Pose(0,0,0);
+        public Pose velocity = new Pose(0,0,0);
+
+        public OtosLocalizer(SparkFunOTOS otos){
+            this.otos = otos;
+            otos.setAngularUnit(AngleUnit.RADIANS);
+
+            otos.calibrateImu();
+        }
+
+        public void setPose(double x, double y, double headingDegrees){
+            SparkFunOTOS.Pose2D pose2D = new SparkFunOTOS.Pose2D(x, y, Math.toRadians(headingDegrees));
+            pose = new Pose(x, y, Math.toRadians(headingDegrees));
+        }
+
+        public Pose getPose(){
+            return pose;
+        }
+
+        public Pose getVelocity(){
+            return velocity;
+        }
+
+        public void update(){
+            SparkFunOTOS.Pose2D pose2D = otos.getPosition();
+            pose = new Pose(pose2D.x, pose2D.y, pose2D.h);
+
+            double vBL = bl.getVelocity();
+            double vFL = fl.getVelocity();
+            double vFR = fr.getVelocity();
+            double vBR = br.getVelocity();
+
+            double vXR = 0.25 * (-vBL + vFL - vFR + vBR) / (TICKS_PER_INCH * STRAFE_RATIO);
+            double vYR = 0.25 * (vBL + vFL + vFR + vBR) / TICKS_PER_INCH;
+            double vA = 0.25 * (-vBL - vFL + vFR + vBR) / TICKS_PER_RAD;
+
+            double sin = Math.sin(pose.h);
+            double cos = Math.cos(pose.h);
+
+            double vX = vXR * sin + vYR * cos;
+            double vY = -vXR * cos + vYR * sin;
+
+            velocity = new Pose(vX, vY, vA);
+        }
+    }
+
+    public class DriveLocalizer implements Localizer{
+        public Pose pose = new Pose(0,0,0);
+        public Pose velocity = new Pose(0,0,0);
+
+        public double headingOffsetRadians = 0;
+        private int ticksBL = 0, ticksFL = 0, ticksFR = 0, ticksBR = 0;
+
+
+        private void setHeadingRadians(double headingRadians){
+            double rawHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+            headingOffsetRadians = AngleUnit.normalizeRadians(headingRadians - rawHeading);
+        }
+
+        private double getHeadingRadians(){
+            double rawHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+            return AngleUnit.normalizeRadians(headingOffsetRadians + rawHeading);
+        }
+
+        public Pose getPose(){ return pose; }
+
+        public void setPose(double x, double y, double hDegrees){
+            double hRadians = Math.toRadians(hDegrees);
+            setHeadingRadians(hRadians);
+            ticksBL = bl.getCurrentPosition();
+            ticksFL = fl.getCurrentPosition();
+            ticksFR = fr.getCurrentPosition();
+            ticksBR = br.getCurrentPosition();
+            pose = new Pose(x, y, hRadians);
+        }
+
+
+        public Pose getVelocity(){
+            return velocity;
+        }
+
+
+        public void update(){
+            int currTicksBL = bl.getCurrentPosition();
+            int currTicksFL = fl.getCurrentPosition();
+            int currTicksFR = fr.getCurrentPosition();
+            int currTicksBR = br.getCurrentPosition();
+
+            int newBL = currTicksBL - ticksBL;
+            int newFL = currTicksFL - ticksFL;
+            int newFR = currTicksFR - ticksFR;
+            int newBR = currTicksBR - ticksBR;
+
+            ticksBL = currTicksBL;
+            ticksFL = currTicksFL;
+            ticksFR = currTicksFR;
+            ticksBR = currTicksBR;
+
+            double dXR = 0.25 * (-newBL + newFL - newFR + newBR) / (TICKS_PER_INCH * STRAFE_RATIO);
+            double dYR = 0.25 * (newBL + newFL + newFR + newBR) / TICKS_PER_INCH;
+
+            double heading = getHeadingRadians();
+            double deltaHeading = AngleUnit.normalizeRadians(heading - pose.h);
+            double avgHeading = AngleUnit.normalizeRadians(pose.h + deltaHeading/2.0);
+            double sinAvg = Math.sin(avgHeading);
+            double cosAvg = Math.cos(avgHeading);
+
+            double dX = dXR * sinAvg + dYR * cosAvg;
+            double dY = -dXR * cosAvg + dYR * sinAvg;
+
+            pose = new Pose(pose.x + dX, pose.y + dY, heading);
+
+            double vBL = bl.getVelocity();
+            double vFL = fl.getVelocity();
+            double vFR = fr.getVelocity();
+            double vBR = br.getVelocity();
+
+            double vXR = 0.25 * (-vBL + vFL - vFR + vBR) / (TICKS_PER_INCH * STRAFE_RATIO);
+            double vYR = 0.25 * (vBL + vFL + vFR + vBR) / TICKS_PER_INCH;
+            double vA = 0.25 * (-vBL - vFL + vFR + vBR) / TICKS_PER_RAD;
+
+            double sin = Math.sin(pose.h);
+            double cos = Math.cos(pose.h);
+
+            double vX = vXR * sin + vYR * cos;
+            double vY = -vXR * cos + vYR * sin;
+
+            velocity = new Pose(vX, vY, vA);
+        }
+    }
+
 
 }

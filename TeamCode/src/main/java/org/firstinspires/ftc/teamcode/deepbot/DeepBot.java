@@ -123,13 +123,25 @@ public class DeepBot extends XDrive {
         for (int i = 0; i < 5; i++){
             gravityTorque += SLIDE_STAGE_MASS[i] * (x[i] + SLIDE_STAGE_LENGTH/2);
             inertiaMoment += SLIDE_STAGE_MASS[i] * (x[i] + SLIDE_STAGE_LENGTH/2) * (x[i] + SLIDE_STAGE_LENGTH/2);
+            if (i<4){
+                inertiaMoment += SLIDE_STAGE_MASS[i] * SLIDE_STAGE_LENGTH * SLIDE_STAGE_LENGTH/12;
+            }
         }
 
         gravityTorque *= Math.cos(Math.toRadians(armDegrees));
+        double tempTargetAngle = targetArmAngle;
+        double tempTargetLength = targetArmLength;
 
-        double armPower = TORQUE_CONSTANT * gravityTorque + INERTIA_CONSTANT * inertiaMoment * (targetArmAngle - armDegrees);
+        if (armDegrees > SAFE_ARM_ANGLE){
+            if (targetArmAngle < SAFE_ARM_ANGLE && slideInches > SAFE_SLIDE_LENGTH){
+                tempTargetAngle = armDegrees;
+            }
+        } else {
+            tempTargetLength = Math.min(SAFE_SLIDE_LENGTH, targetArmLength);
+        }
+        double armPower = TORQUE_CONSTANT * gravityTorque + INERTIA_CONSTANT * inertiaMoment * (tempTargetAngle - armDegrees);
         armMotor.setPower(armPower);
-        slideMotor.setTargetPosition((int) slideTicksFromInches(targetArmLength));
+        slideMotor.setTargetPosition((int) slideTicksFromInches(tempTargetLength));
         slideMotor.setPower(1);
     }
 
