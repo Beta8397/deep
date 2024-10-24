@@ -17,23 +17,25 @@ public class DeepBot extends XDrive {
     public static final int ARM_MAX = 415;
     public static final int SLIDE_MIN = 0;
     public static final int SLIDE_MAX = 3000;
-    public static final double ARM_TICKS_PER_DEGREE = 3.9;
-    public static final double MIN_ARM_DEGREES = -15;
-    public static final double MAX_ARM_DEGREES = 70;
-    public static final double SLIDE_BASE_LENGTH = 14.25;
-    public static final double SLIDE_STAGE_LENGTH = 13.25;
-    public static final double SLIDE_STAGE_THROW = 9.5;
-    public static final double[] SLIDE_STAGE_MASS = {1.0, 1.0, 1.0, 1.0, 0.5};
-    public static final double PAYLOAD_MASS_OFFSET = 3.0;
-    public static final double SLIDE_TICKS_PER_INCH = 114.04;
-    public static final double MAX_SLIDE_LENGTH = 40;
-    public static final double SAFE_SLIDE_LENGTH = 33;
-    public static final double SAFE_ARM_ANGLE = Math.toDegrees( Math.acos(SAFE_SLIDE_LENGTH/MAX_SLIDE_LENGTH));
+    public static final double ARM_TICKS_PER_DEGREE = 3.9;  // Ticks on arm motor per degree elevation
+    public static final double SLIDE_TICKS_PER_INCH = 114.04;  // Ticks on slide motor per inch of travel
+    public static final double MIN_ARM_DEGREES = -15;   // Smallest (most negative) allowed arm angle
+    public static final double MAX_ARM_DEGREES = 70;    // Largest allowed arm angle
+    public static final double MAX_SLIDE_LENGTH = 40;   // Maximum allowed slide length (arm motor shaft to end of slide)
+    public static final double SAFE_SLIDE_LENGTH = 33;  // Maximum slide length that will fit within 42" bounding box for all arm angles
+    public static final double PAYLOAD_DIST_OFFSET = 5;  // Max distance from end of slide to end of payload, inches
+    public static final double SAFE_ARM_ANGLE =         // Min arm angle that respects 42" bounding box for all slide lengths
+            Math.toDegrees( Math.acos((SAFE_SLIDE_LENGTH+PAYLOAD_DIST_OFFSET)/(MAX_SLIDE_LENGTH+PAYLOAD_DIST_OFFSET)));
+    public static final double SLIDE_BASE_LENGTH = 14.25;   // Arm shaft to end of slide when fully retracted
+    public static final double SLIDE_STAGE_LENGTH = 13.25;  // Length of individual slide stage
+    public static final double SLIDE_STAGE_THROW = 9.5; // Greatest distance moved by individual slide stage relative to the stage below
+    public static final double[] SLIDE_STAGE_MASS = {1.0, 1.0, 1.0, 1.0, 0.5};  // Relative mass of individual slide stages (last entry is payload)
+    public static final double PAYLOAD_MASS_OFFSET = 3.0;   // Distance from end of slide to center of mass of payload
 
-    public static final double TORQUE_CONSTANT = 0.1;
-    public static final double INERTIA_CONSTANT = 0.001;
+    public static final double TORQUE_CONSTANT = 0.1;   // Feedforward constant for arm elevation control
+    public static final double INERTIA_CONSTANT = 0.001;    // Proportionate constant for arm elevation control
 
-    private double targetArmLength = SLIDE_BASE_LENGTH;
+    private double targetSlideLength = SLIDE_BASE_LENGTH;
     private double targetArmAngle = MIN_ARM_DEGREES;
 
 
@@ -60,19 +62,31 @@ public class DeepBot extends XDrive {
 
     }
 
-    public double setTargetArmLength(double inches){
+    /*
+     * Set target slide length to requested value, but constrained to respect 42" boundary
+     */
+    public double setTargetSlideLengthSafe(double inches){
         inches = Range.clip(inches, SLIDE_BASE_LENGTH, MAX_SLIDE_LENGTH);
-        inches = Math.min(inches, SAFE_SLIDE_LENGTH / Math.cos(Math.toRadians( targetArmAngle )));
-        targetArmLength= inches;
-        return targetArmLength;
+        if (targetArmAngle < SAFE_ARM_ANGLE){
+            inches = Math.min(inches, SAFE_SLIDE_LENGTH-2);
+        }
+        targetSlideLength = inches;
+        return targetSlideLength;
     }
 
-    public double getTargetArmLength(){
-        return targetArmLength;
+    public double getTargetSlideLength(){
+        return targetSlideLength;
     }
 
-    public double setTargetArmAngle(double degrees){
+    /*
+     * Set target arm angle to requested value, but simultaneously constrain the target
+     * slide length to respect 42" boundary
+     */
+    public double setTargetArmAngleSafe(double degrees){
         targetArmAngle = Range.clip(degrees, MIN_ARM_DEGREES, MAX_ARM_DEGREES);
+        if (targetArmAngle < SAFE_ARM_ANGLE) {
+            targetSlideLength = Math.min(targetSlideLength, SAFE_SLIDE_LENGTH-2);
+        }
         return targetArmAngle;
     }
 
@@ -81,8 +95,8 @@ public class DeepBot extends XDrive {
     }
 
     public void seekArmTargets(double degrees, double inches){
-        int targetArmTicks = (int) armTicksFromDegrees(degrees);
-        int targetSlideTicks = (int)slideTicksFromInches(inches);
+        int targetArmTicks = armTicksFromDegrees(degrees);
+        int targetSlideTicks = slideTicksFromInches(inches);
         armMotor.setTargetPosition(targetArmTicks);
         slideMotor.setTargetPosition(targetSlideTicks);
         armMotor.setPower(1.0);
@@ -90,74 +104,99 @@ public class DeepBot extends XDrive {
     }
 
     public void updateArm(){
-        seekArmTargets(targetArmAngle, targetArmLength);
-
+        seekArmTargets(targetArmAngle, targetSlideLength);
     }
 
 
+    /*
+     * Update arm and slide motors using a combination of feedforward and proportionate control
+     * for arm angle, and RUN_TO_POSITION mode for slide length.
+     *
+     * For arm angle control, the feedforward component of motor power is based on the torque being
+     * applied to the arm by gravity. The TORQUE_CONSTANT should be adjusted to that the arm holds
+     * its current elevation when powered only with the feedforward control. The proportionate
+     * component of motor power is based on the moment of inertia of the arm.
+     */
     public void updateArmNew(){
         int armTicks = armMotor.getCurrentPosition();
         int slideTicks = slideMotor.getCurrentPosition();
-        double armDegrees = armDegreesFromTicks(armTicks);
-        double slideInches = slideTicksFromInches(slideTicks);
-        double[] x = {0, 0, 0, 0, 0};
+        double armDegrees = armDegreesFromTicks(armTicks);  // Current elevation angle of arm
+        double slideInches = slideInchesFromTicks(slideTicks);  // Current length of slide
+
+        /*
+         * Current position of the center of each slide stage relative to the arm motor shaft.
+         * The final element of this array is the position of payload center of mass relative to the
+         * arm motor shaft.
+         */
+        double[] x = {SLIDE_BASE_LENGTH-SLIDE_STAGE_LENGTH/2, 0, 0, 0, 0};
         if (slideInches < SLIDE_BASE_LENGTH + SLIDE_STAGE_THROW){
-            x[1] = slideInches - SLIDE_BASE_LENGTH;
+            x[1] = slideInches - SLIDE_STAGE_LENGTH/2;
             x[2] = x[1];
             x[3] = x[2];
         } else if (slideInches < SLIDE_BASE_LENGTH + 2 * SLIDE_STAGE_THROW){
-            x[1] = SLIDE_STAGE_THROW;
-            x[2] = slideInches - SLIDE_BASE_LENGTH;
+            x[1] = x[0] + SLIDE_STAGE_THROW;
+            x[2] = slideInches - SLIDE_STAGE_LENGTH/2;
             x[3] = x[2];
         } else {
-            x[1] = SLIDE_STAGE_THROW;
-            x[2] = 2 * SLIDE_STAGE_THROW;
+            x[1] = x[0] + SLIDE_STAGE_THROW;
+            x[2] = x[0] + 2 * SLIDE_STAGE_THROW;
             x[3] = slideInches -SLIDE_BASE_LENGTH;
         }
 
         x[4] = slideInches + PAYLOAD_MASS_OFFSET;
 
+        /*
+         * Compute torque being applied by gravity to the arm, and arm rotational moment of inertia,
+         * by adding components for each individual stage (as well as the payload)
+         */
+
         double gravityTorque = 0;
         double inertiaMoment = 0;
 
         for (int i = 0; i < 5; i++){
-            gravityTorque += SLIDE_STAGE_MASS[i] * (x[i] + SLIDE_STAGE_LENGTH/2);
-            inertiaMoment += SLIDE_STAGE_MASS[i] * (x[i] + SLIDE_STAGE_LENGTH/2) * (x[i] + SLIDE_STAGE_LENGTH/2);
+            gravityTorque += SLIDE_STAGE_MASS[i] * x[i];
+            inertiaMoment += SLIDE_STAGE_MASS[i] * x[i]*x[i];
             if (i<4){
                 inertiaMoment += SLIDE_STAGE_MASS[i] * SLIDE_STAGE_LENGTH * SLIDE_STAGE_LENGTH/12;
             }
         }
 
         gravityTorque *= Math.cos(Math.toRadians(armDegrees));
+
+        /*
+         * Use temporary target angle and length to avoid exceeding 42" boundary during travel
+         * from current state to actual target state.
+         */
         double tempTargetAngle = targetArmAngle;
-        double tempTargetLength = targetArmLength;
+        double tempTargetLength = targetSlideLength;
 
         if (armDegrees > SAFE_ARM_ANGLE){
             if (targetArmAngle < SAFE_ARM_ANGLE && slideInches > SAFE_SLIDE_LENGTH){
                 tempTargetAngle = armDegrees;
             }
         } else {
-            tempTargetLength = Math.min(SAFE_SLIDE_LENGTH, targetArmLength);
+            tempTargetLength = Math.min(SAFE_SLIDE_LENGTH, targetSlideLength);
         }
+
         double armPower = TORQUE_CONSTANT * gravityTorque + INERTIA_CONSTANT * inertiaMoment * (tempTargetAngle - armDegrees);
         armMotor.setPower(armPower);
-        slideMotor.setTargetPosition((int) slideTicksFromInches(tempTargetLength));
+        slideMotor.setTargetPosition(slideTicksFromInches(tempTargetLength));
         slideMotor.setPower(1);
     }
 
-    public double armTicksFromDegrees(double degrees){
-        return (degrees - MIN_ARM_DEGREES) * ARM_TICKS_PER_DEGREE;
+    public int armTicksFromDegrees(double degrees){
+        return (int)((degrees - MIN_ARM_DEGREES) * ARM_TICKS_PER_DEGREE);
     }
 
-    public double slideTicksFromInches(double inches){
-        return (inches - SLIDE_BASE_LENGTH) * SLIDE_TICKS_PER_INCH;
+    public int slideTicksFromInches(double inches){
+        return (int)((inches - SLIDE_BASE_LENGTH) * SLIDE_TICKS_PER_INCH);
     }
 
     public double armDegreesFromTicks(int ticks){
         return MIN_ARM_DEGREES + ticks/ ARM_TICKS_PER_DEGREE;
     }
 
-    public double armInchesFromTicks(int ticks){
+    public double slideInchesFromTicks(int ticks){
         return SLIDE_BASE_LENGTH + ticks/ SLIDE_TICKS_PER_INCH;
     }
 
@@ -166,7 +205,7 @@ public class DeepBot extends XDrive {
     }
 
     public double getArmLength(){
-        return armInchesFromTicks(slideMotor.getCurrentPosition());
+        return slideInchesFromTicks(slideMotor.getCurrentPosition());
     }
 
     public void setLiftTilt(int pos){
