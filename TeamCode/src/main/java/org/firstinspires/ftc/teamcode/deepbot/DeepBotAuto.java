@@ -13,4 +13,12 @@ public abstract class DeepBotAuto extends XDriveAuto {
         bot = b;
     }
 
+    public void deliverSpecimen(){
+
+    }
+
+    public void deliverSampleHighBucket(){
+
+    }
+
 }

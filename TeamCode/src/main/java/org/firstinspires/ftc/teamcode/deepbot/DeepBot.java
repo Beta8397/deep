@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.xdrive.XDrive;
@@ -12,6 +13,8 @@ public class DeepBot extends XDrive {
 
     public DcMotorEx armMotor;
     public DcMotorEx slideMotor;
+    public Servo wristServo;
+    public Servo clawServo;
 
     public static final int ARM_MIN = 0;
     public static final int ARM_MAX = 415;
@@ -59,6 +62,9 @@ public class DeepBot extends XDrive {
 
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        wristServo = hwMap.get(Servo.class, "wristServo");
+        clawServo = hwMap.get(Servo.class, "clawServo");
 
     }
 
@@ -218,6 +224,14 @@ public class DeepBot extends XDrive {
         pos = Range.clip(pos, SLIDE_MIN, SLIDE_MAX);
         slideMotor.setTargetPosition(pos);
         slideMotor.setPower(1);
+    }
+
+    public void setWristPosition(double pos){
+        wristServo.setPosition(pos);
+    }
+
+    public void  setClawPosition(double pos){
+        clawServo.setPosition(pos);
     }
 
 }
