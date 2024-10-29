@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.IncludedFirmwareFileInfo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.xdrive.XDrive;
@@ -17,22 +18,22 @@ public class DeepBot extends XDrive {
     public Servo clawServo;
 
     public static final int ARM_MIN = 0;
-    public static final int ARM_MAX = 415;
+    public static final int ARM_MAX = 1398;
     public static final int SLIDE_MIN = 0;
     public static final int SLIDE_MAX = 3000;
-    public static final double ARM_TICKS_PER_DEGREE = 3.9;  // Ticks on arm motor per degree elevation
+    public static final double ARM_TICKS_PER_DEGREE = 14.56;  // Ticks on arm motor per degree elevation
     public static final double SLIDE_TICKS_PER_INCH = 114.04;  // Ticks on slide motor per inch of travel
-    public static final double MIN_ARM_DEGREES = -15;   // Smallest (most negative) allowed arm angle
-    public static final double MAX_ARM_DEGREES = 70;    // Largest allowed arm angle
+    public static final double MIN_ARM_DEGREES = -32;   // Smallest (most negative) allowed arm angle
+    public static final double MAX_ARM_DEGREES = 95;    // Largest allowed arm angle
     public static final double MAX_SLIDE_LENGTH = 40;   // Maximum allowed slide length (arm motor shaft to end of slide)
     public static final double SAFE_SLIDE_LENGTH = 33;  // Maximum slide length that will fit within 42" bounding box for all arm angles
     public static final double PAYLOAD_DIST_OFFSET = 5;  // Max distance from end of slide to end of payload, inches
-    public static final double SAFE_ARM_ANGLE =         // Min arm angle that respects 42" bounding box for all slide lengths
-            Math.toDegrees( Math.acos((SAFE_SLIDE_LENGTH+PAYLOAD_DIST_OFFSET)/(MAX_SLIDE_LENGTH+PAYLOAD_DIST_OFFSET)));
+    public static final double SAFE_ARM_ANGLE = 30;     // Min arm angle that respects 42" bounding box for all slide lengths
     public static final double SLIDE_BASE_LENGTH = 14.25;   // Arm shaft to end of slide when fully retracted
+    public static final double ARM_FULCRUM_HIEGHT = 7.5;
     public static final double SLIDE_STAGE_LENGTH = 13.25;  // Length of individual slide stage
     public static final double SLIDE_STAGE_THROW = 9.5; // Greatest distance moved by individual slide stage relative to the stage below
-    public static final double[] SLIDE_STAGE_MASS = {1.0, 1.0, 1.0, 1.0, 0.5};  // Relative mass of individual slide stages (last entry is payload)
+    public static final double[] SLIDE_STAGE_MASS = {1.0, 1.0, 1.0, 1.0, 0.0};  // Relative mass of individual slide stages (last entry is payload)
     public static final double PAYLOAD_MASS_OFFSET = 3.0;   // Distance from end of slide to center of mass of payload
 
     public static final double TORQUE_CONSTANT = 0.1;   // Feedforward constant for arm elevation control
@@ -75,6 +76,8 @@ public class DeepBot extends XDrive {
         inches = Range.clip(inches, SLIDE_BASE_LENGTH, MAX_SLIDE_LENGTH);
         if (targetArmAngle < SAFE_ARM_ANGLE){
             inches = Math.min(inches, SAFE_SLIDE_LENGTH-2);
+        } else if (targetArmAngle > 75){
+            inches = Math.min(inches, 24);
         }
         targetSlideLength = inches;
         return targetSlideLength;
@@ -92,6 +95,8 @@ public class DeepBot extends XDrive {
         targetArmAngle = Range.clip(degrees, MIN_ARM_DEGREES, MAX_ARM_DEGREES);
         if (targetArmAngle < SAFE_ARM_ANGLE) {
             targetSlideLength = Math.min(targetSlideLength, SAFE_SLIDE_LENGTH-2);
+        }else if (targetArmAngle > 75){
+            targetSlideLength = Math.min(targetSlideLength, 24);
         }
         return targetArmAngle;
     }
@@ -105,7 +110,13 @@ public class DeepBot extends XDrive {
         int targetSlideTicks = slideTicksFromInches(inches);
         armMotor.setTargetPosition(targetArmTicks);
         slideMotor.setTargetPosition(targetSlideTicks);
-        armMotor.setPower(1.0);
+        double armShutOffAngle = -Math.asin(ARM_FULCRUM_HIEGHT/targetSlideLength);
+        double armDegrees = armDegreesFromTicks(armMotor.getCurrentPosition());
+        if (targetArmAngle < armShutOffAngle && armDegrees < armShutOffAngle + 5){
+            armMotor.setPower(0);
+        } else {
+            armMotor.setPower(1.0);
+        }
         slideMotor.setPower(1.0);
     }
 

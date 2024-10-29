@@ -68,18 +68,18 @@ public abstract class XDriveAuto extends LinearOpMode {
         Pose pose = bot.getPose();
         VectorF yr = new VectorF((float)Math.cos(pose.h),(float)Math.sin(pose.h));
         VectorF xr = new VectorF((float)Math.sin(pose.h),-(float)Math.cos(pose.h));
-        VectorF ur = xr.added(yr).multiplied(1.0f/(float) Math.sqrt(2));
+        VectorF ur = xr.added(yr).multiplied(1.0f/(float)Math.sqrt(2));
         VectorF vr = yr.subtracted(xr).multiplied(1.0f/(float)Math.sqrt(2));
         VectorF start = new VectorF((float) pose.x,(float) pose.y);
         VectorF target = new VectorF((float)targetX, (float)targetY);
         VectorF diff = target.subtracted(start);
-        VectorF p;
+        VectorF pIntermed;
         if (rightFirst){
-            p = start.added(ur.multiplied(diff.dotProduct(ur)));
+            pIntermed = start.added(ur.multiplied(diff.dotProduct(ur)));
         } else {
-            p = start.added(vr.multiplied(diff.dotProduct(vr)));
+            pIntermed = start.added(vr.multiplied(diff.dotProduct(vr)));
         }
-        driveTo(mProf, p.get(0), p.get(1), targetHeadingDegrees, tolerance);
+        driveTo(mProf, pIntermed.get(0), pIntermed.get(1), targetHeadingDegrees, tolerance);
         driveTo(mProf, targetX, targetY, targetHeadingDegrees, tolerance);
     }
 
