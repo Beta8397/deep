@@ -21,6 +21,10 @@ public class XDriveTele extends LinearOpMode {
     double speedDivider = 4;
     boolean fieldcentric = false;
 
+    public void setBot(XDrive bot){
+        this.bot = bot;
+    }
+
     public void runOpMode(){
         bot = new XDrive();
         bot.init(hardwareMap);

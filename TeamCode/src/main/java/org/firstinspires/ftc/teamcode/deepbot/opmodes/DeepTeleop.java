@@ -1,28 +1,29 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.deepbot.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
 import org.firstinspires.ftc.teamcode.util.Toggle;
+import org.firstinspires.ftc.teamcode.xdrive.XDriveTele;
 
 @TeleOp
-public class TestDeepArm extends LinearOpMode {
-
+public class DeepTeleop extends XDriveTele {
     DeepBot bot = new DeepBot();
 
-    boolean ascending = false;
+    Toggle toggleLB1 = new Toggle(()->gamepad1.left_bumper);
 
-     Toggle toggleA1 = new Toggle(()-> gamepad1.a);
+    boolean ascending =false;
 
+    @Override
     public void runOpMode(){
         bot.init(hardwareMap);
-        waitForStart();
+        super.setBot(bot);
+        bot.setPose(0,0,0);
 
         while (opModeIsActive()){
-            if (toggleA1.update()){
-                ascending = !ascending;
-            }
+            oneDriveCycle();
+
             double currentArmLength = bot.getArmLength();
             double currentArmAngle = bot.getArmAngle();
             double targetArmLength = bot.getTargetSlideLength();
@@ -35,8 +36,6 @@ public class TestDeepArm extends LinearOpMode {
             telemetry.addData("targetlength", targetArmLength);
             telemetry.addData("armdegrees", currentArmAngle);
             telemetry.addData("slideinches", currentArmLength);
-            telemetry.addData("armTicks",bot.armMotor.getCurrentPosition());
-            telemetry.addData("slideTicks", bot.slideMotor.getCurrentPosition());
             telemetry.update();
         }
     }

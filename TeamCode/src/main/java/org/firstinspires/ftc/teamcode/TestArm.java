@@ -27,11 +27,12 @@ public class TestArm  extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()){
-            armMotor.setPower(gamepad1.left_stick_y);
-            slideMotor.setPower(-gamepad1.right_stick_y);
-            telemetry.addData("armTicks", armMotor.getCurrentPosition());
-            telemetry.addData("slideTicks", slideMotor.getCurrentPosition());
-            telemetry.update();
+//            armMotor.setPower(gamepad1.left_stick_y);
+//            slideMotor.setPower(-gamepad1.right_stick_y);
+//            telemetry.addData("armTicks", armMotor.getCurrentPosition());
+//            telemetry.addData("slideTicks", slideMotor.getCurrentPosition());
+//            telemetry.update();
+            continue;
         }
 
 

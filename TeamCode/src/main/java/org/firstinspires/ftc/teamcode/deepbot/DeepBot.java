@@ -26,6 +26,7 @@ public class DeepBot extends XDrive {
     public static final double MIN_ARM_DEGREES = -32;   // Smallest (most negative) allowed arm angle
     public static final double MAX_ARM_DEGREES = 95;    // Largest allowed arm angle
     public static final double MAX_SLIDE_LENGTH = 40;   // Maximum allowed slide length (arm motor shaft to end of slide)
+    public static final double MAX_ARM_UP_LENGTH = 30;
     public static final double SAFE_SLIDE_LENGTH = 33;  // Maximum slide length that will fit within 42" bounding box for all arm angles
     public static final double PAYLOAD_DIST_OFFSET = 5;  // Max distance from end of slide to end of payload, inches
     public static final double SAFE_ARM_ANGLE = 30;     // Min arm angle that respects 42" bounding box for all slide lengths
@@ -77,7 +78,7 @@ public class DeepBot extends XDrive {
         if (targetArmAngle < SAFE_ARM_ANGLE){
             inches = Math.min(inches, SAFE_SLIDE_LENGTH-2);
         } else if (targetArmAngle > 75){
-            inches = Math.min(inches, 24);
+            inches = Math.min(inches, MAX_ARM_UP_LENGTH);
         }
         targetSlideLength = inches;
         return targetSlideLength;
@@ -96,7 +97,7 @@ public class DeepBot extends XDrive {
         if (targetArmAngle < SAFE_ARM_ANGLE) {
             targetSlideLength = Math.min(targetSlideLength, SAFE_SLIDE_LENGTH-2);
         }else if (targetArmAngle > 75){
-            targetSlideLength = Math.min(targetSlideLength, 24);
+            targetSlideLength = Math.min(targetSlideLength, MAX_ARM_UP_LENGTH);
         }
         return targetArmAngle;
     }
@@ -105,14 +106,14 @@ public class DeepBot extends XDrive {
         return targetArmAngle;
     }
 
-    public void seekArmTargets(double degrees, double inches){
+    public void seekArmTargets(double degrees, double inches, boolean ascending){
         int targetArmTicks = armTicksFromDegrees(degrees);
         int targetSlideTicks = slideTicksFromInches(inches);
         armMotor.setTargetPosition(targetArmTicks);
         slideMotor.setTargetPosition(targetSlideTicks);
         double armShutOffAngle = -Math.asin(ARM_FULCRUM_HIEGHT/targetSlideLength);
         double armDegrees = armDegreesFromTicks(armMotor.getCurrentPosition());
-        if (targetArmAngle < armShutOffAngle && armDegrees < armShutOffAngle + 5){
+        if (targetArmAngle < armShutOffAngle && armDegrees < armShutOffAngle + 5 && !ascending){
             armMotor.setPower(0);
         } else {
             armMotor.setPower(1.0);
@@ -120,8 +121,8 @@ public class DeepBot extends XDrive {
         slideMotor.setPower(1.0);
     }
 
-    public void updateArm(){
-        seekArmTargets(targetArmAngle, targetSlideLength);
+    public void updateArm(boolean ascending){
+        seekArmTargets(targetArmAngle, targetSlideLength, ascending);
     }
 
 
