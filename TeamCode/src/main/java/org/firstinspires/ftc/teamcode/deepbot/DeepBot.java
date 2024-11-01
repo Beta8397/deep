@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.deepbot;
 
+import android.net.MailTo;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -9,6 +11,7 @@ import com.qualcomm.robotcore.util.IncludedFirmwareFileInfo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.xdrive.XDrive;
+import org.opencv.core.Mat;
 
 public class DeepBot extends XDrive {
 
@@ -43,6 +46,11 @@ public class DeepBot extends XDrive {
     private double targetSlideLength = SLIDE_BASE_LENGTH;
     private double targetArmAngle = MIN_ARM_DEGREES;
 
+    private static final double CLAW_OPEN = 0.35;
+    private static final double CLAW_CLOSED = 0.17;
+    public static final double WRIST_UP = 0.8;
+    public static final double WRIST_DOWN = 0.45;
+
 
 
 
@@ -70,6 +78,20 @@ public class DeepBot extends XDrive {
 
     }
 
+    public void resetArm(){
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        armMotor.setTargetPosition(0);
+        slideMotor.setTargetPosition(0);
+
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        targetArmAngle = armDegreesFromTicks(0);
+        targetSlideLength = slideInchesFromTicks(0);
+    }
+
     /*
      * Set target slide length to requested value, but constrained to respect 42" boundary
      */
@@ -80,6 +102,12 @@ public class DeepBot extends XDrive {
         } else if (targetArmAngle > 75){
             inches = Math.min(inches, MAX_ARM_UP_LENGTH);
         }
+        targetSlideLength = inches;
+        return targetSlideLength;
+    }
+
+    public double setTargetSlideLengthUnSafe(double inches){
+        inches = Math.min(inches, SAFE_SLIDE_LENGTH);
         targetSlideLength = inches;
         return targetSlideLength;
     }
@@ -99,6 +127,11 @@ public class DeepBot extends XDrive {
         }else if (targetArmAngle > 75){
             targetSlideLength = Math.min(targetSlideLength, MAX_ARM_UP_LENGTH);
         }
+        return targetArmAngle;
+    }
+
+    public double setTargetArmAngleUnSafe(double degrees){
+        targetArmAngle = Math.min(targetArmAngle, 75);
         return targetArmAngle;
     }
 
@@ -244,6 +277,22 @@ public class DeepBot extends XDrive {
 
     public void  setClawPosition(double pos){
         clawServo.setPosition(pos);
+    }
+
+    public void  closeClaw(){
+        setClawPosition(CLAW_CLOSED);
+    }
+
+    public void openClaw(){
+        setClawPosition(CLAW_OPEN);
+    }
+
+    public void setWristUp(){
+        setWristPosition(WRIST_UP);
+    }
+
+    public void  setWristDown(){
+        setWristPosition(WRIST_DOWN);
     }
 
 }
