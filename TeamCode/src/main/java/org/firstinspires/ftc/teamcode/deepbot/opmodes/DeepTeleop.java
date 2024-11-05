@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.deepbot.opmodes;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
@@ -11,10 +10,10 @@ import org.firstinspires.ftc.teamcode.xdrive.XDriveTele;
 public class DeepTeleop extends XDriveTele {
     DeepBot bot = new DeepBot();
 
-    Toggle toggleLB1 = new Toggle(()->gamepad1.left_bumper);
+
     Toggle toggleA2 = new Toggle(()->gamepad2.a);
-    Toggle toggleRB1 = new Toggle(()->gamepad1.right_bumper);
-    Toggle toggleDPUp1 = new Toggle(()->gamepad1.dpad_up);
+    Toggle toggleRB2 = new Toggle(()->gamepad2.right_bumper);
+    Toggle toggleDPUp2 = new Toggle(()->gamepad2.dpad_up);
 
     boolean ascending =false;
     boolean resettingArm = false;
@@ -52,12 +51,12 @@ public class DeepTeleop extends XDriveTele {
             double targetArmAngle = bot.getTargetArmAngle();
 
             if (!resettingArm) {
-                bot.setTargetArmAngleSafe(targetArmAngle + gamepad1.left_stick_y * 0.5);
-                bot.setTargetSlideLengthSafe(targetArmLength - gamepad1.right_stick_y * 0.2);
+                bot.setTargetArmAngleSafe(targetArmAngle + gamepad2.left_stick_y * 0.5);
+                bot.setTargetSlideLengthSafe(targetArmLength - gamepad2.right_stick_y * 0.2);
                 bot.updateArm(ascending);
             } else {
-                bot.setTargetArmAngleUnSafe(targetArmAngle + gamepad1.left_stick_y * 0.5);
-                bot.setTargetSlideLengthUnSafe(targetArmLength - gamepad1.right_stick_y * 0.2);
+                bot.setTargetArmAngleUnSafe(targetArmAngle + gamepad2.left_stick_y * 0.5);
+                bot.setTargetSlideLengthUnSafe(targetArmLength - gamepad2.right_stick_y * 0.2);
                 bot.updateArm(true);
             }
 
@@ -68,7 +67,7 @@ public class DeepTeleop extends XDriveTele {
 
             // handle claw
 
-            if (toggleRB1.update()){
+            if (toggleRB2.update()){
                 clawOpen = !clawOpen;
                 if (clawOpen){
                     bot.openClaw();
@@ -80,7 +79,7 @@ public class DeepTeleop extends XDriveTele {
 
             // handle wrist
 
-            if (toggleDPUp1.update()){
+            if (toggleDPUp2.update()){
                 wristUp = !wristUp;
                 if (wristUp){
                     bot.setWristUp();

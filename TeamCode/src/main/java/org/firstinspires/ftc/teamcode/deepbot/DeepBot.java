@@ -47,9 +47,11 @@ public class DeepBot extends XDrive {
     private double targetArmAngle = MIN_ARM_DEGREES;
 
     private static final double CLAW_OPEN = 0.35;
-    private static final double CLAW_CLOSED = 0.17;
+    private static final double CLAW_CLOSED = 0.19;
     public static final double WRIST_UP = 0.8;
     public static final double WRIST_DOWN = 0.45;
+
+    public boolean raisingArm = true;
 
 
 
@@ -141,12 +143,19 @@ public class DeepBot extends XDrive {
 
     public void seekArmTargets(double degrees, double inches, boolean ascending){
         int targetArmTicks = armTicksFromDegrees(degrees);
+
+        if (targetArmTicks > armMotor.getTargetPosition()){
+            raisingArm = true;
+        } else if (targetArmTicks < armMotor.getTargetPosition()){
+            raisingArm = false;
+        }
+
         int targetSlideTicks = slideTicksFromInches(inches);
         armMotor.setTargetPosition(targetArmTicks);
         slideMotor.setTargetPosition(targetSlideTicks);
         double armShutOffAngle = -Math.asin(ARM_FULCRUM_HIEGHT/targetSlideLength);
         double armDegrees = armDegreesFromTicks(armMotor.getCurrentPosition());
-        if (targetArmAngle < armShutOffAngle && armDegrees < armShutOffAngle + 5 && !ascending){
+        if (targetArmAngle < armShutOffAngle && armDegrees < armShutOffAngle + 2 && !ascending && !raisingArm){
             armMotor.setPower(0);
         } else {
             armMotor.setPower(1.0);
