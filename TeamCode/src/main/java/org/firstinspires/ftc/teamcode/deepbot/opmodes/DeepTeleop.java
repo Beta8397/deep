@@ -12,6 +12,7 @@ public class DeepTeleop extends XDriveTele {
 
 
     Toggle toggleA2 = new Toggle(()->gamepad2.a);
+    Toggle toggleB2 = new Toggle(()-> gamepad2.b);
     Toggle toggleRB2 = new Toggle(()->gamepad2.right_bumper);
     Toggle toggleDPUp2 = new Toggle(()->gamepad2.dpad_up);
 
@@ -38,12 +39,18 @@ public class DeepTeleop extends XDriveTele {
             oneDriveCycle();
 
             // handle arm
-            if (toggleA2.update()){
+            if (toggleA2.update()) {
                 resettingArm = true;
             } else if (resettingArm && !gamepad2.a){
                 resettingArm = false;
                 bot.resetArm();
             }
+
+            if (toggleB2.update()){
+                boolean powerOff = bot.getArmPowerOff();
+                bot.setArmPowerOff(!powerOff);
+            }
+
 
             double currentArmLength = bot.getArmLength();
             double currentArmAngle = bot.getArmAngle();

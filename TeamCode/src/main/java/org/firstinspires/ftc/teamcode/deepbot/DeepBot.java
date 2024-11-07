@@ -51,7 +51,9 @@ public class DeepBot extends XDrive {
     public static final double WRIST_UP = 0.8;
     public static final double WRIST_DOWN = 0.45;
 
-    public boolean raisingArm = true;
+//    public boolean raisingArm = true;
+
+    private boolean armPowerOff = false;
 
 
 
@@ -99,7 +101,7 @@ public class DeepBot extends XDrive {
      */
     public double setTargetSlideLengthSafe(double inches){
         inches = Range.clip(inches, SLIDE_BASE_LENGTH, MAX_SLIDE_LENGTH);
-        if (targetArmAngle < SAFE_ARM_ANGLE){
+        if (targetArmAngle < SAFE_ARM_ANGLE || armPowerOff){
             inches = Math.min(inches, SAFE_SLIDE_LENGTH-2);
         } else if (targetArmAngle > 75){
             inches = Math.min(inches, MAX_ARM_UP_LENGTH);
@@ -144,22 +146,30 @@ public class DeepBot extends XDrive {
     public void seekArmTargets(double degrees, double inches, boolean ascending){
         int targetArmTicks = armTicksFromDegrees(degrees);
 
-        if (targetArmTicks > armMotor.getTargetPosition()){
-            raisingArm = true;
-        } else if (targetArmTicks < armMotor.getTargetPosition()){
-            raisingArm = false;
-        }
+//        if (targetArmTicks > armMotor.getTargetPosition()){
+//            raisingArm = true;
+//        } else if (targetArmTicks < armMotor.getTargetPosition()){
+//            raisingArm = false;
+//        }
 
         int targetSlideTicks = slideTicksFromInches(inches);
         armMotor.setTargetPosition(targetArmTicks);
         slideMotor.setTargetPosition(targetSlideTicks);
-        double armShutOffAngle = -Math.asin(ARM_FULCRUM_HIEGHT/targetSlideLength);
-        double armDegrees = armDegreesFromTicks(armMotor.getCurrentPosition());
-        if (targetArmAngle < armShutOffAngle && armDegrees < armShutOffAngle + 2 && !ascending && !raisingArm){
+
+//        double armShutOffAngle = -Math.asin(ARM_FULCRUM_HIEGHT/targetSlideLength);
+//        double armDegrees = armDegreesFromTicks(armMotor.getCurrentPosition());
+//        if (targetArmAngle < armShutOffAngle && armDegrees < armShutOffAngle + 2 && !ascending && !raisingArm){
+//            armMotor.setPower(0);
+//        } else {
+//            armMotor.setPower(1.0);
+//        }
+
+        if (armPowerOff) {
             armMotor.setPower(0);
         } else {
-            armMotor.setPower(1.0);
+            armMotor.setPower(1);
         }
+
         slideMotor.setPower(1.0);
     }
 
@@ -302,6 +312,20 @@ public class DeepBot extends XDrive {
 
     public void  setWristDown(){
         setWristPosition(WRIST_DOWN);
+    }
+
+
+    public void setArmPowerOff(boolean powerOff){
+        if (powerOff && getArmAngle() > -10){
+            return;
+        } else if (!powerOff && armPowerOff){
+            targetArmAngle = getArmAngle();
+        }
+        armPowerOff = powerOff;
+    }
+
+    public boolean getArmPowerOff(){
+        return armPowerOff;
     }
 
 }

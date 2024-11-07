@@ -138,6 +138,7 @@ public class XDrive {
 
         public void setPose(double x, double y, double headingDegrees){
             SparkFunOTOS.Pose2D pose2D = new SparkFunOTOS.Pose2D(x, y, Math.toRadians(headingDegrees));
+            otos.setPosition(pose2D);
             pose = new Pose(x, y, Math.toRadians(headingDegrees));
         }
 
