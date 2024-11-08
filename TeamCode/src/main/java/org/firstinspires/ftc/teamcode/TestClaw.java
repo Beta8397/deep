@@ -27,7 +27,7 @@ public class TestClaw extends LinearOpMode {
             }
 
             bot.setClawPosition(clawPos);
-            telemetry.addData("claw", clawPos);
+            telemetry.addData("clawServo", clawPos);
             telemetry.update();
         }
     }

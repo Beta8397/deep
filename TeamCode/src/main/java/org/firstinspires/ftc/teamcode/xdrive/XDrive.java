@@ -69,13 +69,14 @@ public class XDrive {
         imu = hwMap.get(IMU.class, "imu");
 
         // TODO: Set RevHub orientation correctly for the real robot
-        imu.initialize(new IMU.Parameters(
-                new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.RIGHT, RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
-        ElapsedTime et = new ElapsedTime();
-        while (et.milliseconds() < 150 && !Thread.currentThread().isInterrupted()) continue;
+//        imu.initialize(new IMU.Parameters(
+//                new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.RIGHT, RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
+//        ElapsedTime et = new ElapsedTime();
+//        while (et.milliseconds() < 150 && !Thread.currentThread().isInterrupted()) continue;
 
 
-        localizer = new DriveLocalizer();
+        SparkFunOTOS otos = hwMap.get(SparkFunOTOS.class, "sensor_otos");
+        localizer = new OtosLocalizer(otos);
     }
 
 

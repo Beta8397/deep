@@ -46,8 +46,8 @@ public class DeepBot extends XDrive {
     private double targetSlideLength = SLIDE_BASE_LENGTH;
     private double targetArmAngle = MIN_ARM_DEGREES;
 
-    private static final double CLAW_OPEN = 0.35;
-    private static final double CLAW_CLOSED = 0.19;
+    private static final double CLAW_OPEN = 0.70;
+    private static final double CLAW_CLOSED = 0.53;
     public static final double WRIST_UP = 0.8;
     public static final double WRIST_DOWN = 0.45;
 
