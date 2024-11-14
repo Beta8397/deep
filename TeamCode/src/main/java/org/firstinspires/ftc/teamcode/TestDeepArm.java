@@ -18,7 +18,6 @@ public class TestDeepArm extends LinearOpMode {
     public void runOpMode(){
         bot.init(hardwareMap);
         waitForStart();
-
         while (opModeIsActive()){
             if (toggleA1.update()){
                 ascending = !ascending;

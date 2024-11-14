@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.deepbot.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
 import org.firstinspires.ftc.teamcode.util.Toggle;
@@ -9,7 +10,7 @@ import org.firstinspires.ftc.teamcode.xdrive.XDriveTele;
 @TeleOp
 public class DeepTeleop extends XDriveTele {
     DeepBot bot = new DeepBot();
-
+public DcMotorEx armMotor;
 
     Toggle toggleA2 = new Toggle(()->gamepad2.a);
     Toggle toggleB2 = new Toggle(()-> gamepad2.b);
@@ -51,6 +52,8 @@ public class DeepTeleop extends XDriveTele {
             } else if (resettingArm && !gamepad2.a){
                 resettingArm = false;
                 bot.resetArm();
+                armMotor.setPower(20);
+
             }
 
             if (toggleB2.update()){
@@ -64,12 +67,12 @@ public class DeepTeleop extends XDriveTele {
             double targetArmLength = bot.getTargetSlideLength();
             double targetArmAngle = bot.getTargetArmAngle();
 
-            if (!resettingArm) {
-                bot.setTargetArmAngleSafe(targetArmAngle + gamepad2.left_stick_y * 0.5);
-                bot.setTargetSlideLengthSafe(targetArmLength - gamepad2.right_stick_y * 0.2);
+           if (!resettingArm) {
+               bot.setTargetArmAngleSafe(targetArmAngle + gamepad2.left_stick_y * 1.0);
+               bot.setTargetSlideLengthSafe(targetArmLength - gamepad2.right_stick_y * 0.2);
                 bot.updateArm(ascending);
             } else {
-                bot.setTargetArmAngleUnSafe(targetArmAngle + gamepad2.left_stick_y * 0.5);
+                bot.setTargetArmAngleUnSafe(targetArmAngle + gamepad2.left_stick_y * 1.0);
                 bot.setTargetSlideLengthUnSafe(targetArmLength - gamepad2.right_stick_y * 0.2);
                 bot.updateArm(true);
             }

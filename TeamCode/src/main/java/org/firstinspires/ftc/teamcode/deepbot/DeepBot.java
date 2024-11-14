@@ -21,12 +21,12 @@ public class DeepBot extends XDrive {
     public Servo clawServo;
 
     public static final int ARM_MIN = 0;
-    public static final int ARM_MAX = 1398;
+    public static final int ARM_MAX = 6990;
     public static final int SLIDE_MIN = 0;
     public static final int SLIDE_MAX = 3000;
-    public static final double ARM_TICKS_PER_DEGREE = 14.56;  // Ticks on arm motor per degree elevation
+    public static final double ARM_TICKS_PER_DEGREE = 65.6;  // Ticks on arm motor per degree elevation
     public static final double SLIDE_TICKS_PER_INCH = 114.04;  // Ticks on slide motor per inch of travel
-    public static final double MIN_ARM_DEGREES = -32;   // Smallest (most negative) allowed arm angle
+    public static final double MIN_ARM_DEGREES = -45;   // Smallest (most negative) allowed arm angle
     public static final double MAX_ARM_DEGREES = 95;    // Largest allowed arm angle
     public static final double MAX_SLIDE_LENGTH = 40;   // Maximum allowed slide length (arm motor shaft to end of slide)
     public static final double MAX_ARM_UP_LENGTH = 30;
@@ -77,6 +77,8 @@ public class DeepBot extends XDrive {
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        slideMotor.setPower(1);
+
         wristServo = hwMap.get(Servo.class, "wristServo");
         clawServo = hwMap.get(Servo.class, "clawServo");
 
@@ -123,7 +125,7 @@ public class DeepBot extends XDrive {
     /*
      * Set target arm angle to requested value, but simultaneously constrain the target
      * slide length to respect 42" boundary
-     */
+//     */
     public double setTargetArmAngleSafe(double degrees){
         targetArmAngle = Range.clip(degrees, MIN_ARM_DEGREES, MAX_ARM_DEGREES);
         if (targetArmAngle < SAFE_ARM_ANGLE) {
@@ -281,7 +283,7 @@ public class DeepBot extends XDrive {
     public void setLiftTilt(int pos){
         pos = Range.clip(pos, ARM_MIN, ARM_MAX);
         armMotor.setTargetPosition(pos);
-        armMotor.setPower(1);
+        armMotor.setPower(4);
     }
 
     public void setLiftExtend(int pos){
