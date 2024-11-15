@@ -28,7 +28,7 @@ public class DeepBot extends XDrive {
     public static final double SLIDE_TICKS_PER_INCH = 114.04;  // Ticks on slide motor per inch of travel
     public static final double MIN_ARM_DEGREES = -45;   // Smallest (most negative) allowed arm angle
     public static final double MAX_ARM_DEGREES = 95;    // Largest allowed arm angle
-    public static final double MAX_SLIDE_LENGTH = 40;   // Maximum allowed slide length (arm motor shaft to end of slide)
+    public static final double MAX_SLIDE_LENGTH = 48;   // Maximum allowed slide length (arm motor shaft to end of slide)
     public static final double MAX_ARM_UP_LENGTH = 30;
     public static final double SAFE_SLIDE_LENGTH = 33;  // Maximum slide length that will fit within 42" bounding box for all arm angles
     public static final double PAYLOAD_DIST_OFFSET = 5;  // Max distance from end of slide to end of payload, inches
@@ -46,8 +46,8 @@ public class DeepBot extends XDrive {
     private double targetSlideLength = SLIDE_BASE_LENGTH;
     private double targetArmAngle = MIN_ARM_DEGREES;
 
-    private static final double CLAW_OPEN = 0.70;
-    private static final double CLAW_CLOSED = 0.53;
+    public static final double CLAW_OPEN = 0.70;
+    public static final double CLAW_CLOSED = 0.53;
     public static final double WRIST_UP = 0.8;
     public static final double WRIST_DOWN = 0.45;
 

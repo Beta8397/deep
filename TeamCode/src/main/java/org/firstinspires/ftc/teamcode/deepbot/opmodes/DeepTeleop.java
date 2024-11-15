@@ -10,8 +10,6 @@ import org.firstinspires.ftc.teamcode.xdrive.XDriveTele;
 @TeleOp
 public class DeepTeleop extends XDriveTele {
     DeepBot bot = new DeepBot();
-public DcMotorEx armMotor;
-
     Toggle toggleA2 = new Toggle(()->gamepad2.a);
     Toggle toggleB2 = new Toggle(()-> gamepad2.b);
     Toggle toggleRB2 = new Toggle(()->gamepad2.right_bumper);
@@ -52,8 +50,6 @@ public DcMotorEx armMotor;
             } else if (resettingArm && !gamepad2.a){
                 resettingArm = false;
                 bot.resetArm();
-                armMotor.setPower(20);
-
             }
 
             if (toggleB2.update()){

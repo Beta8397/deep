@@ -59,6 +59,7 @@ public class XDriveTele extends LinearOpMode {
         }
         bot.updateOdometry();
         Pose pose = bot.getPose();
+        Pose vel = bot.getVelocity();
         if (toggleX1.update()){
             double newHeading = Alliance.alliance == Alliance.BLUE? 0 : 180;
             bot.setPose(pose.x, pose.y, newHeading);
@@ -85,6 +86,8 @@ public class XDriveTele extends LinearOpMode {
         telemetry.addData("fieldCentric", fieldcentric);
         telemetry.addData("Pos","x %.1f y %.1f h %.1f", pose.x, pose.y,
                 Math.toDegrees(pose.h));
+        telemetry.addData("vel", "vx = %.1f  vy = %.1f  va = %.1f",
+                vel.x, vel.y, Math.toDegrees(vel.h));
         telemetry.addData("raw degrees",
                 bot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
         telemetry.addData("Heading offset", Math.toDegrees(bot.headingOffsetRadians));
