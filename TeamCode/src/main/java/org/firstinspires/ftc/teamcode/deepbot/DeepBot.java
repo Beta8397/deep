@@ -280,16 +280,24 @@ public class DeepBot extends XDrive {
         return slideInchesFromTicks(slideMotor.getCurrentPosition());
     }
 
-    public void setLiftTilt(int pos){
-        pos = Range.clip(pos, ARM_MIN, ARM_MAX);
-        armMotor.setTargetPosition(pos);
-        armMotor.setPower(4);
+    public void setArmDegrees(double degrees){
+        int ticks = armTicksFromDegrees(degrees);
+        armMotor.setTargetPosition(ticks);
+        armMotor.setPower(1);
     }
 
-    public void setLiftExtend(int pos){
-        pos = Range.clip(pos, SLIDE_MIN, SLIDE_MAX);
-        slideMotor.setTargetPosition(pos);
+    public boolean isArmBusy(){
+        return armMotor.isBusy();
+    }
+
+    public void setSlideInches(double inches){
+        int ticks = slideTicksFromInches(inches);
+        slideMotor.setTargetPosition(ticks);
         slideMotor.setPower(1);
+    }
+
+    public boolean isSlideBusy(){
+        return slideMotor.isBusy();
     }
 
     public void setWristPosition(double pos){

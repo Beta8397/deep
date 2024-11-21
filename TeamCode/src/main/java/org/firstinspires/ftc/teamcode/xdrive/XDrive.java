@@ -45,10 +45,10 @@ public class XDrive {
         br = hwMap.get(DcMotorEx.class, "back_right_motor");
 
         // Set zero power behavior to BRAKE for all motors (so robot stops quickly)
-        bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // TODO: Set Direction to Reverse for the correct motors
         br.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -133,7 +133,7 @@ public class XDrive {
         public OtosLocalizer(SparkFunOTOS otos){
             this.otos = otos;
             otos.setAngularUnit(AngleUnit.RADIANS);
-            otos.setOffset(new SparkFunOTOS.Pose2D(0, 0, Math.toRadians(45)));
+            otos.setOffset(new SparkFunOTOS.Pose2D(0, 0, Math.toRadians(55)));
             otos.setLinearScalar(1.044);
             otos.calibrateImu();
             otos.resetTracking();

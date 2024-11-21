@@ -12,7 +12,7 @@ public class DeepTeleop extends XDriveTele {
     DeepBot bot = new DeepBot();
     Toggle toggleA2 = new Toggle(()->gamepad2.a);
     Toggle toggleB2 = new Toggle(()-> gamepad2.b);
-    Toggle toggleRB2 = new Toggle(()->gamepad2.right_bumper);
+    Toggle toggleX2 = new Toggle(()->gamepad2.x);
     Toggle toggleDPUp2 = new Toggle(()->gamepad2.dpad_up);
 
     boolean ascending =false;
@@ -80,7 +80,7 @@ public class DeepTeleop extends XDriveTele {
 
             // handle claw
 
-            if (toggleRB2.update()){
+            if (toggleX2.update()){
                 clawOpen = !clawOpen;
                 if (clawOpen){
                     bot.openClaw();
@@ -93,9 +93,9 @@ public class DeepTeleop extends XDriveTele {
             // handle wrist
 
             if (gamepad2.dpad_up){
-                targetWristAngle -= 0.2;
+                targetWristAngle -= 1;
             } else if(gamepad2.dpad_down){
-                targetWristAngle += 0.2;
+                targetWristAngle += 1;
             } else if (gamepad2.x){
                 targetWristAngle = DEFAULT_WRIST_ANGLE;
             }
