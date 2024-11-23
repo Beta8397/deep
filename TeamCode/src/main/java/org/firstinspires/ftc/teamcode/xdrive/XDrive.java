@@ -29,7 +29,7 @@ public class XDrive {
     private Pose pose = new Pose(0, 0, 0);
     private Pose velocity = new Pose(0, 0, 0);
 
-    public Localizer localizer;
+    public OtosLocalizer localizer;
 
     public void init(HardwareMap hwMap){
 
@@ -79,6 +79,10 @@ public class XDrive {
         localizer = new OtosLocalizer(otos);
     }
 
+    public OtosLocalizer getLocalizer(){
+        return localizer;
+    }
+
 
     public Pose getPose(){ return localizer.getPose(); }
 
@@ -88,6 +92,10 @@ public class XDrive {
 
     public Pose getVelocity(){
         return localizer.getVelocity();
+    }
+
+    public void refreshPose(){
+        localizer.refreshPose();
     }
 
     public void setDrivePower(double px, double py, double pa){
@@ -133,10 +141,22 @@ public class XDrive {
         public OtosLocalizer(SparkFunOTOS otos){
             this.otos = otos;
             otos.setAngularUnit(AngleUnit.RADIANS);
-            otos.setOffset(new SparkFunOTOS.Pose2D(0, 0, Math.toRadians(55)));
-            otos.setLinearScalar(1.044);
-            otos.calibrateImu();
+            otos.setOffset(new SparkFunOTOS.Pose2D(0, 0, Math.toRadians(50)));
+            otos.setLinearScalar(1.127);
             otos.resetTracking();
+        }
+
+        public void calibrateIMU(){
+            otos.calibrateImu();
+        }
+
+        public int getCalibrationProgress(){
+            return otos.getImuCalibrationProgress();
+        }
+
+        public void refreshPose(){
+            otos.resetTracking();
+            setPose(pose.x, pose.y, Math.toDegrees(pose.h));
         }
 
         public void setPose(double x, double y, double headingDegrees){

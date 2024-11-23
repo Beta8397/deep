@@ -6,6 +6,8 @@ import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
 import org.firstinspires.ftc.teamcode.deepbot.DeepBotAuto;
 import org.firstinspires.ftc.teamcode.util.MotionProfile;
 import org.firstinspires.ftc.teamcode.util.Pose;
+import org.firstinspires.ftc.teamcode.xdrive.XDrive;
+
 @Autonomous
 public class DeepTestAuto  extends DeepBotAuto {
     DeepBot bot = new DeepBot();
@@ -19,21 +21,14 @@ public class DeepTestAuto  extends DeepBotAuto {
 
 
         bot.setClawPosition(DeepBot.CLAW_CLOSED);
+        bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH);
 
+        autoWaitForStart();
 
-        waitForStart();
+        bot.setPose(0, 0, 0);
 
-        bot.setPose(47, 47, 180);
+        deliverSpecimen();
 
-        deliverSampleHighBucket();
-
-//        driveTo(speed, -47, 47, 180, 1);
-//        turnTo(-90, 90, 8, 3);
-//        driveTo(speed, -47, -47, -90, 1);
-//        turnTo(0, 90, 8, 3);
-//        driveTo(speed, 47, -47, 0, 1);
-//        turnTo(90, 90, 8, 3);
-//        driveTo(speed, 47, 47, 90, 1);
 
         while (opModeIsActive()){
             Pose pose = bot.getPose();

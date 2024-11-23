@@ -64,11 +64,11 @@ public class DeepTeleop extends XDriveTele {
             double targetArmAngle = bot.getTargetArmAngle();
 
            if (!resettingArm) {
-               bot.setTargetArmAngleSafe(targetArmAngle + gamepad2.left_stick_y * 1.0);
+               bot.setTargetArmAngleSafe(targetArmAngle - gamepad2.left_stick_y * 1.0);
                bot.setTargetSlideLengthSafe(targetArmLength - gamepad2.right_stick_y * 0.2);
                 bot.updateArm(ascending);
             } else {
-                bot.setTargetArmAngleUnSafe(targetArmAngle + gamepad2.left_stick_y * 1.0);
+                bot.setTargetArmAngleUnSafe(targetArmAngle - gamepad2.left_stick_y * 1.0);
                 bot.setTargetSlideLengthUnSafe(targetArmLength - gamepad2.right_stick_y * 0.2);
                 bot.updateArm(true);
             }

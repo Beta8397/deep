@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
 import org.firstinspires.ftc.teamcode.deepbot.DeepBotAuto;
+import org.firstinspires.ftc.teamcode.util.Pose;
+import org.firstinspires.ftc.teamcode.xdrive.XDrive;
 
 @Autonomous
 public class LeftAuto extends DeepBotAuto {
@@ -17,14 +19,17 @@ public class LeftAuto extends DeepBotAuto {
         super.setBot(bot);
 
         bot.setClawPosition(DeepBot.CLAW_CLOSED);
+        bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH);
 
-        waitForStart();
+        autoWaitForStart();
 
         bot.setPose(-31, 7, 180);
 
-        driveTo(normalSpeed, -33, 17, 180, 1);
-        driveTo(normalSpeed, -45, 17, 180, 1);
+        driveTo(normalSpeed, -33, 15, 180, 1);
+        driveTo(normalSpeed, -47, 15, 180, 1);
         turnTo(-135, 90, 8, 2);
+
+        Pose pose1 = bot.getPose();
 
         deliverSampleHighBucket();
 
@@ -37,8 +42,10 @@ public class LeftAuto extends DeepBotAuto {
         bot.setArmDegrees(DeepBot.MIN_ARM_DEGREES);
         while(opModeIsActive() && bot.isSlideBusy() && et.milliseconds()<4000) continue;
 
+        Pose pose2 = bot.getPose();
+        bot.refreshPose();
         turnTo(180, 90, 8, 2);
-        driveTo(normalSpeed, 40, 17, 180, 1);
+        driveTo(normalSpeed, 40, 15, 180, 1);
 
         while(opModeIsActive()){
             int armTicks = bot.armMotor.getCurrentPosition();
@@ -47,6 +54,8 @@ public class LeftAuto extends DeepBotAuto {
             int slideTicks = bot.slideMotor.getCurrentPosition();
             telemetry.addData("Length", "ticks = %d  inches = %.1f",
                     slideTicks, bot.slideInchesFromTicks(slideTicks));
+            addPoseToTelemetry("pose1", pose1);
+            addPoseToTelemetry("pose2", pose2);
             telemetry.addData("POS", "x = %.1f  y = %.1f  h = %.1f",
                     bot.getPose().x, bot.getPose().y, Math.toDegrees(bot.getPose().h));
             telemetry.update();

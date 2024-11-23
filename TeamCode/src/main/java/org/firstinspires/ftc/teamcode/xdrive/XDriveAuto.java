@@ -22,6 +22,11 @@ public abstract class XDriveAuto extends LinearOpMode {
         this.bot = bot;
     }
 
+    public void addPoseToTelemetry(String caption, Pose pose){
+        telemetry.addData(caption, "x = %.1f  y = %.1f  h = %.1f",
+                pose.x, pose.y, Math.toDegrees(pose.h));
+    }
+
     public void driveTo(MotionProfile mProfile, double targetX, double targetY,
                         double targetHeadingDegrees, double tolerance){
         double targetHeadingRadians = Math.toRadians(targetHeadingDegrees);
