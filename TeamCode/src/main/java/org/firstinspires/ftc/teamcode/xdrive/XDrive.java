@@ -142,7 +142,7 @@ public class XDrive {
             this.otos = otos;
             otos.setAngularUnit(AngleUnit.RADIANS);
             otos.setOffset(new SparkFunOTOS.Pose2D(0, 0, Math.toRadians(50)));
-            otos.setLinearScalar(1.127);
+            otos.setLinearScalar(1.04);
             otos.resetTracking();
         }
 

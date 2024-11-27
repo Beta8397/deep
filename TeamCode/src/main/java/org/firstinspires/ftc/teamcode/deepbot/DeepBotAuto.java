@@ -33,6 +33,13 @@ public abstract class DeepBotAuto extends XDriveAuto {
         waitForStart();
     }
 
+    public boolean slideBusy(){
+        return Math.abs((bot.slideMotor.getCurrentPosition() - bot.slideMotor.getTargetPosition()) ) > 10;
+    }
+    public boolean armBusy(){
+        return Math.abs((bot.armMotor.getCurrentPosition() - bot.armMotor.getTargetPosition()) ) > 10;
+    }
+
     public void deliverSpecimen(){
         bot.setArmDegrees(30);
         sleep(5000);
@@ -55,14 +62,18 @@ public abstract class DeepBotAuto extends XDriveAuto {
     public void deliverSampleHighBucket(){
         ElapsedTime et = new ElapsedTime();
         bot.setArmDegrees(70);
-        sleep(5000);
-//        while(opModeIsActive() && bot.isArmBusy() && et.milliseconds()<6000) continue;
+//        sleep(5000);
+        while(opModeIsActive() && armBusy() && et.milliseconds()<5000) {
+            continue;
+        }
         bot.setWristPosition(0.2);
         sleep(300);
-        bot.setSlideInches(44);
         et.reset();
-        sleep(5000);
-//        while(opModeIsActive() && bot.isSlideBusy() && et.milliseconds()<6000) continue;
+        bot.setSlideInches(44);
+//        sleep(5000);
+        while(opModeIsActive() && slideBusy() && et.milliseconds()<5000) {
+            continue;
+        }
         bot.setWristPosition(0.8);
         sleep(400);
         bot.setClawPosition(DeepBot.CLAW_OPEN);

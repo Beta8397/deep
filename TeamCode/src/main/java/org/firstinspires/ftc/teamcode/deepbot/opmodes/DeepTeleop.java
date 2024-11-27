@@ -11,9 +11,9 @@ import org.firstinspires.ftc.teamcode.xdrive.XDriveTele;
 public class DeepTeleop extends XDriveTele {
     DeepBot bot = new DeepBot();
     Toggle toggleA2 = new Toggle(()->gamepad2.a);
-    Toggle toggleB2 = new Toggle(()-> gamepad2.b);
-    Toggle toggleX2 = new Toggle(()->gamepad2.x);
-    Toggle toggleDPUp2 = new Toggle(()->gamepad2.dpad_up);
+    Toggle toggleRB2 = new Toggle(()->gamepad2.right_bumper);
+    Toggle toggleB2andDPR2 = new Toggle(()->gamepad2.b && gamepad2.dpad_right);
+    Toggle toggleLB2 = new Toggle(()->gamepad2.left_bumper);
 
     boolean ascending =false;
     boolean resettingArm = false;
@@ -44,7 +44,7 @@ public class DeepTeleop extends XDriveTele {
             // handle drive train
             oneDriveCycle();
 
-            // handle arm
+            // handle arm angle and slide length
             if (toggleA2.update()) {
                 resettingArm = true;
             } else if (resettingArm && !gamepad2.a){
@@ -52,26 +52,34 @@ public class DeepTeleop extends XDriveTele {
                 bot.resetArm();
             }
 
-            if (toggleB2.update()){
-                boolean powerOff = bot.getArmPowerOff();
-                bot.setArmPowerOff(!powerOff);
-            }
-
+            boolean lb2Toggled = toggleLB2.update();
 
             double currentArmLength = bot.getArmLength();
             double currentArmAngle = bot.getArmAngle();
             double targetArmLength = bot.getTargetSlideLength();
             double targetArmAngle = bot.getTargetArmAngle();
 
-           if (!resettingArm) {
+            // arm angle
+            if (lb2Toggled && !resettingArm){
+                bot.setTargetArmAngleSafe(-45);
+            } else if (!resettingArm) {
                bot.setTargetArmAngleSafe(targetArmAngle - gamepad2.left_stick_y * 1.0);
-               bot.setTargetSlideLengthSafe(targetArmLength - gamepad2.right_stick_y * 0.2);
-                bot.updateArm(ascending);
             } else {
                 bot.setTargetArmAngleUnSafe(targetArmAngle - gamepad2.left_stick_y * 1.0);
-                bot.setTargetSlideLengthUnSafe(targetArmLength - gamepad2.right_stick_y * 0.2);
-                bot.updateArm(true);
             }
+
+           // slide length
+            if (lb2Toggled && !resettingArm){
+                bot.setTargetSlideLengthSafe(16);
+            } else if (toggleB2andDPR2.update() && !resettingArm){
+                bot.setTargetSlideLengthSafe(DeepBot.SLIDE_BASE_LENGTH);
+            } else if (!resettingArm) {
+                bot.setTargetSlideLengthSafe(targetArmLength - gamepad2.right_stick_y * 0.2);
+            } else {
+                bot.setTargetSlideLengthUnSafe(targetArmLength - gamepad2.right_stick_y * 0.2);
+            }
+
+            bot.updateArm();
 
             telemetry.addData("targetangle", targetArmAngle);
             telemetry.addData("targetlength", targetArmLength);
@@ -80,7 +88,7 @@ public class DeepTeleop extends XDriveTele {
 
             // handle claw
 
-            if (toggleX2.update()){
+            if (toggleRB2.update()){
                 clawOpen = !clawOpen;
                 if (clawOpen){
                     bot.openClaw();
@@ -92,12 +100,15 @@ public class DeepTeleop extends XDriveTele {
 
             // handle wrist
 
-            if (gamepad2.dpad_up){
-                targetWristAngle -= 1;
-            } else if(gamepad2.dpad_down){
-                targetWristAngle += 1;
+            double wristChange = gamepad2.left_trigger - gamepad2.right_trigger;
+            if (lb2Toggled && !resettingArm){
+                targetWristAngle = DEFAULT_WRIST_ANGLE;
             } else if (gamepad2.x){
                 targetWristAngle = DEFAULT_WRIST_ANGLE;
+            } else if (gamepad2.y){
+                targetWristAngle = DEFAULT_WRIST_ANGLE - 90;
+            } else {
+                targetWristAngle += wristChange;
             }
 
             double wristPos = WRIST_P0 + (targetWristAngle - currentArmAngle) / WRIST_GAIN;

@@ -1,15 +1,16 @@
 package org.firstinspires.ftc.teamcode.deepbot.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
 import org.firstinspires.ftc.teamcode.deepbot.DeepBotAuto;
 import org.firstinspires.ftc.teamcode.util.Pose;
-import org.firstinspires.ftc.teamcode.xdrive.XDrive;
 
 @Autonomous
-public class LeftAuto extends DeepBotAuto {
+@Disabled
+public class LeftAutoPlus extends DeepBotAuto {
 
     DeepBot bot = new DeepBot();
 
@@ -25,8 +26,8 @@ public class LeftAuto extends DeepBotAuto {
 
         bot.setPose(-31, 7, 180);
 
-        driveTo(normalSpeed, -31, 15.5, 180, 1);
-        driveTo(normalSpeed, -48.5, 15.5, 180, 1);
+        driveTo(normalSpeed, -31, 15, 180, 1);
+        driveTo(normalSpeed, -49, 15, 180, 1);
         turnTo(-135, 90, 8, 2);
 
         Pose pose1 = bot.getPose();
@@ -40,11 +41,37 @@ public class LeftAuto extends DeepBotAuto {
         while(opModeIsActive() && slideBusy() && et.milliseconds()<4000) continue;
         et.reset();
         bot.setArmDegrees(DeepBot.MIN_ARM_DEGREES);
+        bot.setSlideInches(16);
+        bot.setWristPosition(0.465);
+        bot.setClawPosition(DeepBot.CLAW_OPEN);
 //        while(opModeIsActive() && armBusy() && et.milliseconds()<4000) continue;
 
         Pose pose2 = bot.getPose();
         bot.refreshPose();
-        turnTo(180, 90, 8, 2);
+
+        turnTo(90, 90, 8,2);
+
+        driveTo(normalSpeed, -52, 15, 90, 1);
+        driveTo(normalSpeed, -52, 38, 90, 1);
+        bot.setClawPosition(DeepBot.CLAW_CLOSED);
+        sleep(400);
+        driveTo(medium, -49, 15, 90, 1);
+        turnTo(-135,90,8, 2);
+        deliverSampleHighBucket();
+
+        bot.setWristPosition(.2);
+        sleep(300);
+        bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH);
+        et.reset();
+        while(opModeIsActive() && slideBusy() && et.milliseconds()<4000) continue;
+        et.reset();
+        bot.setArmDegrees(DeepBot.MIN_ARM_DEGREES);
+        bot.setSlideInches(16);
+        bot.setWristPosition(0.465);
+        bot.setClawPosition(DeepBot.CLAW_OPEN);
+
+
+        turnTo(-180, 90, 8, 2);
         driveTo(medium, 42, 13, 180, 1);
 
         while(opModeIsActive()){
