@@ -14,6 +14,7 @@ public class DeepTeleop extends XDriveTele {
     Toggle toggleRB2 = new Toggle(()->gamepad2.right_bumper);
     Toggle toggleB2andDPR2 = new Toggle(()->gamepad2.b && gamepad2.dpad_right);
     Toggle toggleLB2 = new Toggle(()->gamepad2.left_bumper);
+    Toggle toggleDPL2 = new Toggle(()->gamepad2.dpad_left);
 
     boolean ascending =false;
     boolean resettingArm = false;
@@ -52,7 +53,9 @@ public class DeepTeleop extends XDriveTele {
                 bot.resetArm();
             }
 
-            boolean lb2Toggled = toggleLB2.update();
+            boolean lb2Toggled = toggleLB2.update(); // lower arm and adjust slide and wrist for picking up samples
+            boolean b2andDPR2Toggled = toggleB2andDPR2.update(); // Bring slide all the way in
+            boolean dpl2Toggled = toggleDPL2.update();  // Move arm to 70 degrees
 
             double currentArmLength = bot.getArmLength();
             double currentArmAngle = bot.getArmAngle();
@@ -60,18 +63,21 @@ public class DeepTeleop extends XDriveTele {
             double targetArmAngle = bot.getTargetArmAngle();
 
             // arm angle
-            if (lb2Toggled && !resettingArm){
+            if (dpl2Toggled && !resettingArm){
+                bot.setTargetArmAngleSafe(70);
+            } else if (lb2Toggled && !resettingArm){
                 bot.setTargetArmAngleSafe(-45);
             } else if (!resettingArm) {
-               bot.setTargetArmAngleSafe(targetArmAngle - gamepad2.left_stick_y * 1.0);
+               bot.setTargetArmAngleSafe(targetArmAngle + gamepad2.left_stick_y * 1.0);
             } else {
-                bot.setTargetArmAngleUnSafe(targetArmAngle - gamepad2.left_stick_y * 1.0);
+                bot.setTargetArmAngleUnSafe(targetArmAngle + gamepad2.left_stick_y * 1.0);
             }
+
 
            // slide length
             if (lb2Toggled && !resettingArm){
                 bot.setTargetSlideLengthSafe(16);
-            } else if (toggleB2andDPR2.update() && !resettingArm){
+            } else if (b2andDPR2Toggled && !resettingArm){
                 bot.setTargetSlideLengthSafe(DeepBot.SLIDE_BASE_LENGTH);
             } else if (!resettingArm) {
                 bot.setTargetSlideLengthSafe(targetArmLength - gamepad2.right_stick_y * 0.2);
