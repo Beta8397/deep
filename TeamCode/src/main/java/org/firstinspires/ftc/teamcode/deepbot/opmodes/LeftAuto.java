@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
 import org.firstinspires.ftc.teamcode.deepbot.DeepBotAuto;
+import org.firstinspires.ftc.teamcode.logging.BetaLog;
 import org.firstinspires.ftc.teamcode.util.Pose;
 import org.firstinspires.ftc.teamcode.xdrive.XDrive;
 
@@ -18,15 +19,15 @@ public class LeftAuto extends DeepBotAuto {
         bot.init(hardwareMap);
         super.setBot(bot);
 
-        bot.setClawPosition(DeepBot.CLAW_CLOSED);
-        bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH);
+        BetaLog.initialize();
+
 
         autoWaitForStart();
 
-        bot.setPose(-31, 7, 180);
+        bot.setPose(-31, 8, 180);
 
-        driveTo(normalSpeed, -31, 15.5, 180, 1);
-        driveTo(normalSpeed, -48.5, 15.5, 180, 1);
+        driveTo(normalSpeed, -31, 14.5, 180, 1);
+        driveTo(normalSpeed, -50, 14.5, 180, 1);
         turnTo(-135, 90, 8, 2);
 
         Pose pose1 = bot.getPose();
@@ -45,7 +46,7 @@ public class LeftAuto extends DeepBotAuto {
         Pose pose2 = bot.getPose();
         bot.refreshPose();
         turnTo(180, 90, 8, 2);
-        driveTo(medium, 42, 13, 180, 1);
+        driveTo(medium, 42, 16, 180, 1);
 
         while(opModeIsActive()){
             int armTicks = bot.armMotor.getCurrentPosition();
@@ -60,6 +61,8 @@ public class LeftAuto extends DeepBotAuto {
                     bot.getPose().x, bot.getPose().y, Math.toDegrees(bot.getPose().h));
             telemetry.update();
         }
+
+        BetaLog.close();
 
     }
 }

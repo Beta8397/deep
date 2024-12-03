@@ -66,7 +66,7 @@ public class XDrive {
         fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        imu = hwMap.get(IMU.class, "imu");
+//        imu = hwMap.get(IMU.class, "imu");
 
         // TODO: Set RevHub orientation correctly for the real robot
 //        imu.initialize(new IMU.Parameters(

@@ -61,7 +61,7 @@ public class XDriveTele extends LinearOpMode {
         Pose pose = bot.getPose();
         Pose vel = bot.getVelocity();
         if (toggleX1.update()){
-            double newHeading = Alliance.alliance == Alliance.BLUE? 0 : 180;
+            double newHeading = 90;
             bot.setPose(pose.x, pose.y, newHeading);
             pose = bot.getPose();
         }
@@ -71,8 +71,8 @@ public class XDriveTele extends LinearOpMode {
         double pxr, pyr, pa;
         pa = gpa/speedDivider;
         if (fieldcentric){
-            double px = (Alliance.alliance==Alliance.BLUE? gpy : -gpy)/speedDivider;
-            double py = (Alliance.alliance==Alliance.BLUE? -gpx : +gpx)/speedDivider;
+            double px = gpx/speedDivider;
+            double py = gpy/speedDivider;
             double cos = Math.cos(pose.h);
             double sin = Math.sin(pose.h);
             pxr = px * sin - py * cos;
@@ -86,11 +86,6 @@ public class XDriveTele extends LinearOpMode {
         telemetry.addData("fieldCentric", fieldcentric);
         telemetry.addData("Pos","x %.1f y %.1f h %.1f", pose.x, pose.y,
                 Math.toDegrees(pose.h));
-        telemetry.addData("vel", "vx = %.1f  vy = %.1f  va = %.1f",
-                vel.x, vel.y, Math.toDegrees(vel.h));
-        telemetry.addData("raw degrees",
-                bot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
-        telemetry.addData("Heading offset", Math.toDegrees(bot.headingOffsetRadians));
     }
 
 }

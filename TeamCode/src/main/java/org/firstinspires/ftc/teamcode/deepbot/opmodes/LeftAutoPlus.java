@@ -6,10 +6,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
 import org.firstinspires.ftc.teamcode.deepbot.DeepBotAuto;
+import org.firstinspires.ftc.teamcode.logging.BetaLog;
 import org.firstinspires.ftc.teamcode.util.Pose;
 
 @Autonomous
-@Disabled
+
 public class LeftAutoPlus extends DeepBotAuto {
 
     DeepBot bot = new DeepBot();
@@ -19,12 +20,11 @@ public class LeftAutoPlus extends DeepBotAuto {
         bot.init(hardwareMap);
         super.setBot(bot);
 
-        bot.setClawPosition(DeepBot.CLAW_CLOSED);
-        bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH);
+        BetaLog.initialize();
 
         autoWaitForStart();
 
-        bot.setPose(-31, 7, 180);
+        bot.setPose(-31, 8, 180);
 
         driveTo(normalSpeed, -31, 15, 180, 1);
         driveTo(normalSpeed, -49, 15, 180, 1);
@@ -55,9 +55,12 @@ public class LeftAutoPlus extends DeepBotAuto {
         driveTo(normalSpeed, -52, 38, 90, 1);
         bot.setClawPosition(DeepBot.CLAW_CLOSED);
         sleep(400);
-        driveTo(medium, -49, 15, 90, 1);
+        driveTo(medium, -51, 17, 90, 1);
         turnTo(-135,90,8, 2);
         deliverSampleHighBucket();
+
+        BetaLog.close();
+
 
         bot.setWristPosition(.2);
         sleep(300);
@@ -69,6 +72,9 @@ public class LeftAutoPlus extends DeepBotAuto {
         bot.setSlideInches(16);
         bot.setWristPosition(0.465);
         bot.setClawPosition(DeepBot.CLAW_OPEN);
+
+
+
 
 
         turnTo(-180, 90, 8, 2);

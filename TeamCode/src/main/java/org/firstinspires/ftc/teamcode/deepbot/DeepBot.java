@@ -17,6 +17,7 @@ public class DeepBot extends XDrive {
 
     public DcMotorEx armMotor;
     public DcMotorEx slideMotor;
+    public DcMotorEx winchMotor;
     public Servo wristServo;
     public Servo clawServo;
 
@@ -27,7 +28,7 @@ public class DeepBot extends XDrive {
     public static final double ARM_TICKS_PER_DEGREE = 65.6;  // Ticks on arm motor per degree elevation
     public static final double SLIDE_TICKS_PER_INCH = 114.04;  // Ticks on slide motor per inch of travel
     public static final double MIN_ARM_DEGREES = -45;   // Smallest (most negative) allowed arm angle
-    public static final double MAX_ARM_DEGREES = 95;    // Largest allowed arm angle
+    public static final double MAX_ARM_DEGREES = 71;    // Largest allowed arm angle
     public static final double MAX_SLIDE_LENGTH = 48;   // Maximum allowed slide length (arm motor shaft to end of slide)
     public static final double MAX_ARM_UP_LENGTH = 30;
     public static final double SAFE_SLIDE_LENGTH = 33;  // Maximum slide length that will fit within 42" bounding box for all arm angles
@@ -75,6 +76,11 @@ public class DeepBot extends XDrive {
         slideMotor.setTargetPositionTolerance(10);
 
         slideMotor.setPower(1);
+
+        winchMotor = hwMap.get(DcMotorEx.class,"winchMotor");
+        winchMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        winchMotor.setTargetPosition(0);
+        winchMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         wristServo = hwMap.get(Servo.class, "wristServo");
         clawServo = hwMap.get(Servo.class, "clawServo");
