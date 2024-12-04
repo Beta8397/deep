@@ -21,8 +21,8 @@ public class DeepTeleop extends XDriveTele {
     boolean clawOpen = true;
     boolean wristUp = false;
 
-    private static final double WRIST_P0 = 0.633;
-    private static final double WRIST_GAIN = -268;
+    private static final double WRIST_P0 = 0.642;
+    private static final double WRIST_GAIN = -270;
     private static final double DEFAULT_WRIST_ANGLE = 0;
     private double targetWristAngle = DEFAULT_WRIST_ANGLE;
 
@@ -126,6 +126,10 @@ public class DeepTeleop extends XDriveTele {
                 wristPos = 0;
             }
             bot.setWristPosition(wristPos);
+
+            // report distances
+            telemetry.addData("leftdistance", bot.getLeftDistance());
+            telemetry.addData("backdistance", bot.getBackDistance());
 
             telemetry.update();
         }

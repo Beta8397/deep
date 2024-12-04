@@ -26,8 +26,8 @@ public class LeftAuto extends DeepBotAuto {
 
         bot.setPose(-31, 8, 180);
 
-        driveTo(normalSpeed, -31, 14.5, 180, 1);
-        driveTo(normalSpeed, -50, 14.5, 180, 1);
+        driveTo(normalSpeed, -31, 15.5, 180, 1);
+        driveTo(normalSpeed, -49, 15.5, 180, 1);
         turnTo(-135, 90, 8, 2);
 
         Pose pose1 = bot.getPose();

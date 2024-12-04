@@ -5,11 +5,13 @@ import android.net.MailTo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.IncludedFirmwareFileInfo;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.xdrive.XDrive;
 import org.opencv.core.Mat;
 
@@ -20,6 +22,8 @@ public class DeepBot extends XDrive {
     public DcMotorEx winchMotor;
     public Servo wristServo;
     public Servo clawServo;
+    public DistanceSensor distLeft;
+    public  DistanceSensor distBack;
 
     public static final int ARM_MIN = 0;
     public static final int ARM_MAX = 6990;
@@ -84,6 +88,10 @@ public class DeepBot extends XDrive {
 
         wristServo = hwMap.get(Servo.class, "wristServo");
         clawServo = hwMap.get(Servo.class, "clawServo");
+
+        distLeft = hwMap.get(DistanceSensor.class, "left_dist");
+        distBack = hwMap.get(DistanceSensor.class, "back_dist");
+
 
     }
 
@@ -310,6 +318,14 @@ public class DeepBot extends XDrive {
     public void setWristDown() {
         setWristPosition(WRIST_DOWN);
     }
+
+    public double getLeftDistance(){
+        return distLeft.getDistance(DistanceUnit.INCH);
+    }
+    public  double getBackDistance(){
+        return  distBack.getDistance(DistanceUnit.INCH);
+    }
+
 
 }
 

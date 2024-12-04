@@ -2,8 +2,11 @@ package org.firstinspires.ftc.teamcode.deepbot;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.logging.BetaLog;
 import org.firstinspires.ftc.teamcode.util.MotionProfile;
+import org.firstinspires.ftc.teamcode.util.Pose;
 import org.firstinspires.ftc.teamcode.xdrive.XDrive;
 import org.firstinspires.ftc.teamcode.xdrive.XDriveAuto;
 
@@ -24,6 +27,7 @@ public abstract class DeepBotAuto extends XDriveAuto {
         XDrive.OtosLocalizer loc =  bot.getLocalizer();
         bot.setClawPosition(DeepBot.CLAW_CLOSED);
         bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH);
+        bot.setWristPosition(0);
         telemetry.addData("Let Go Of Bot", "");
         telemetry.update();
         sleep(3000);
@@ -43,6 +47,22 @@ public abstract class DeepBotAuto extends XDriveAuto {
     }
     public boolean armBusy(){
         return Math.abs((bot.armMotor.getCurrentPosition() - bot.armMotor.getTargetPosition()) ) > 10;
+    }
+
+    public double getAvgLeftDistance(int num){
+        double sum = 0;
+        for (int i = 0; opModeIsActive() && i < num; i++){
+            sum += bot.getLeftDistance();
+        }
+        return sum/num;
+    }
+
+    public double getAvgBackDistance(int num){
+        double sum = 0;
+        for (int i = 0; opModeIsActive() && i < num; i++){
+            sum += bot.getBackDistance();
+        }
+        return sum/num;
     }
 
     public void deliverSpecimen(){
@@ -100,9 +120,42 @@ public abstract class DeepBotAuto extends XDriveAuto {
             }
         }
         bot.setWristPosition(0.8);
-        sleep(400);
+        sleep(600);
         bot.setClawPosition(DeepBot.CLAW_OPEN);
         sleep(500);
     }
+
+
+
+    public void driveLeftDist(MotionProfile mProfile, double targetDist, double targetY,
+                        double targetHeadingDegrees, double tolerance){
+        double targetHeadingRadians = Math.toRadians(targetHeadingDegrees);
+        Pose startPose = bot.getPose();
+
+        while (opModeIsActive()){
+            bot.updateOdometry();
+            Pose pose = bot.getPose();
+            double d2 = Math.abs(targetY - pose.y);
+
+            if (d2 < tolerance){
+                break;
+            }
+
+            double vY = mProfile.vMin;
+            double vX = 4 * (targetDist - bot.getLeftDistance());
+            double sin = Math.sin(pose.h);
+            double cos = Math.cos(pose.h);
+
+            double vXR = vX * sin - vY * cos;
+            double vYR = vX * cos + vY * sin;
+
+            double vA = 2.0 * AngleUnit.normalizeRadians(targetHeadingRadians - pose.h);
+
+            bot.setDriveSpeed(vXR, vYR, vA);
+        }
+
+        bot.setDrivePower(0, 0, 0);
+    }
+
 
 }
