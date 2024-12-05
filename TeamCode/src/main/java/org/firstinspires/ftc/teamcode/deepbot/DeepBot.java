@@ -271,12 +271,13 @@ public class DeepBot extends XDrive {
         return armDegreesFromTicks(armMotor.getCurrentPosition());
     }
 
-    public double getArmLength() {
+    public double getSlideInches() {
         return slideInchesFromTicks(slideMotor.getCurrentPosition());
     }
 
     public void setArmDegrees(double degrees) {
         int ticks = armTicksFromDegrees(degrees);
+        armMotor.getCurrentPosition();
         armMotor.setTargetPosition(ticks);
         armMotor.setPower(1);
     }
@@ -287,6 +288,7 @@ public class DeepBot extends XDrive {
 
     public void setSlideInches(double inches) {
         int ticks = slideTicksFromInches(inches);
+        slideMotor.getCurrentPosition();
         slideMotor.setTargetPosition(ticks);
         slideMotor.setPower(1);
     }

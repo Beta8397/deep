@@ -7,6 +7,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.logging.BetaLog;
 import org.firstinspires.ftc.teamcode.util.MotionProfile;
 import org.firstinspires.ftc.teamcode.util.Pose;
+import org.firstinspires.ftc.teamcode.util.Predicate;
 import org.firstinspires.ftc.teamcode.xdrive.XDrive;
 import org.firstinspires.ftc.teamcode.xdrive.XDriveAuto;
 
@@ -85,8 +86,6 @@ public abstract class DeepBotAuto extends XDriveAuto {
     }
 
     public void deliverSampleHighBucket(){
-        bot.armMotor.getCurrentPosition();
-        bot.slideMotor.getCurrentPosition();
 
         ElapsedTime et = new ElapsedTime();
         bot.setArmDegrees(70);
@@ -102,8 +101,8 @@ public abstract class DeepBotAuto extends XDriveAuto {
                 break;
             }
         }
-        bot.setWristPosition(0.2);
-        sleep(300);
+
+
         et.reset();
         bot.setSlideInches(44);
 
@@ -123,6 +122,23 @@ public abstract class DeepBotAuto extends XDriveAuto {
         sleep(600);
         bot.setClawPosition(DeepBot.CLAW_OPEN);
         sleep(500);
+    }
+
+    public void waitForMotor(Predicate condition){
+        while(opModeIsActive()){
+            if (condition.test()){
+                break;
+            }
+        }
+    }
+
+    public void dropSampleInBucket(){
+        bot.setWristPosition(0.8);
+        sleep(600);
+        bot.setClawPosition(DeepBot.CLAW_OPEN);
+        sleep(500);
+        bot.setWristPosition(0.2);
+        sleep(300);
     }
 
 

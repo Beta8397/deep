@@ -22,7 +22,7 @@ public class TestDeepArm extends LinearOpMode {
             if (toggleA1.update()){
                 ascending = !ascending;
             }
-            double currentArmLength = bot.getArmLength();
+            double currentArmLength = bot.getSlideInches();
             double currentArmAngle = bot.getArmAngle();
             double targetArmLength = bot.getTargetSlideLength();
             double targetArmAngle = bot.getTargetArmAngle();

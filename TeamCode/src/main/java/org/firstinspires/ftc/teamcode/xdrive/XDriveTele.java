@@ -19,7 +19,7 @@ public class XDriveTele extends LinearOpMode {
     private Toggle toggleY1 = new Toggle(()-> gamepad1.y);
     boolean slowMode = true;
     double speedDivider = 4;
-    boolean fieldcentric = false;
+    boolean fieldcentric = true;
 
     public void setBot(XDrive bot){
         this.bot = bot;
@@ -28,7 +28,7 @@ public class XDriveTele extends LinearOpMode {
     public void runOpMode(){
         bot = new XDrive();
         bot.init(hardwareMap);
-        bot.setPose(0, 0, 0);
+        bot.setPose(0, 0, 180);
 
         while (opModeInInit()){
             if (toggleB1.update()){
@@ -51,7 +51,7 @@ public class XDriveTele extends LinearOpMode {
             if (slowMode){
                 speedDivider = 4;
             }else {
-                speedDivider = 1;
+                speedDivider = 1.5;
             }
         }
         if (toggleB1.update()){

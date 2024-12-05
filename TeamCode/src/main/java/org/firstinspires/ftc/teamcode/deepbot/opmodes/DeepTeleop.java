@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.deepbot.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
 import org.firstinspires.ftc.teamcode.util.Toggle;
@@ -15,6 +14,7 @@ public class DeepTeleop extends XDriveTele {
     Toggle toggleB2andDPR2 = new Toggle(()->gamepad2.b && gamepad2.dpad_right);
     Toggle toggleLB2 = new Toggle(()->gamepad2.left_bumper);
     Toggle toggleDPL2 = new Toggle(()->gamepad2.dpad_left);
+    Toggle toggleDPD2 = new Toggle(()-> gamepad2.dpad_down);
 
     boolean ascending =false;
     boolean resettingArm = false;
@@ -56,8 +56,9 @@ public class DeepTeleop extends XDriveTele {
             boolean lb2Toggled = toggleLB2.update(); // lower arm and adjust slide and wrist for picking up samples
             boolean b2andDPR2Toggled = toggleB2andDPR2.update(); // Bring slide all the way in
             boolean dpl2Toggled = toggleDPL2.update();  // Move arm to 70 degrees
+            boolean dpd2Toggled = toggleDPD2.update();
 
-            double currentArmLength = bot.getArmLength();
+            double currentArmLength = bot.getSlideInches();
             double currentArmAngle = bot.getArmAngle();
             double targetArmLength = bot.getTargetSlideLength();
             double targetArmAngle = bot.getTargetArmAngle();
@@ -75,14 +76,16 @@ public class DeepTeleop extends XDriveTele {
 
 
            // slide length
-            if (lb2Toggled && !resettingArm){
+            if (dpd2Toggled && !resettingArm) {
+                bot.setTargetSlideLengthSafe(46);
+            } else if (lb2Toggled && !resettingArm){
                 bot.setTargetSlideLengthSafe(16);
             } else if (b2andDPR2Toggled && !resettingArm){
                 bot.setTargetSlideLengthSafe(DeepBot.SLIDE_BASE_LENGTH);
             } else if (!resettingArm) {
-                bot.setTargetSlideLengthSafe(targetArmLength - gamepad2.right_stick_y * 0.2);
+                bot.setTargetSlideLengthSafe(targetArmLength - gamepad2.right_stick_y * 0.4);
             } else {
-                bot.setTargetSlideLengthUnSafe(targetArmLength - gamepad2.right_stick_y * 0.2);
+                bot.setTargetSlideLengthUnSafe(targetArmLength - gamepad2.right_stick_y * 0.4);
             }
 
             bot.updateArm();
@@ -91,7 +94,7 @@ public class DeepTeleop extends XDriveTele {
             telemetry.addData("targetlength", targetArmLength);
             telemetry.addData("armdegrees", currentArmAngle);
             telemetry.addData("slideinches", currentArmLength);
-
+            telemetry.addData("LeftDist", bot.getLeftDistance());
             // handle claw
 
             if (toggleRB2.update()){
