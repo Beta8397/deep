@@ -51,7 +51,7 @@ public class XDriveTele extends LinearOpMode {
             if (slowMode){
                 speedDivider = 4;
             }else {
-                speedDivider = 1.5;
+                speedDivider = 1.75;
             }
         }
         if (toggleB1.update()){
