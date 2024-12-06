@@ -52,7 +52,7 @@ public class LeftAutoPlusRed extends DeepBotAuto {
 
         bot.setArmDegrees(70);
 
-        driveTo(medium, -52, 18, 90, 1);
+        driveTo(medium, -51, 19, 90, 1);
         turnTo(-135,90,8, 2);
 
         waitForMotor(()->!bot.armMotor.isBusy());

@@ -15,6 +15,9 @@ public class DeepTeleop extends XDriveTele {
     Toggle toggleLB2 = new Toggle(()->gamepad2.left_bumper);
     Toggle toggleDPL2 = new Toggle(()->gamepad2.dpad_left);
     Toggle toggleDPD2 = new Toggle(()-> gamepad2.dpad_down);
+    Toggle toggleDPU2 = new Toggle(()-> gamepad2.dpad_up);
+    Toggle toggleDPU1 = new Toggle(()-> gamepad1.dpad_up);
+    Toggle toggleDPD1 = new Toggle(()-> gamepad1.dpad_down);
 
     boolean ascending =false;
     boolean resettingArm = false;
@@ -25,6 +28,10 @@ public class DeepTeleop extends XDriveTele {
     private static final double WRIST_GAIN = -270;
     private static final double DEFAULT_WRIST_ANGLE = 0;
     private double targetWristAngle = DEFAULT_WRIST_ANGLE;
+
+    enum WinchState{OFF, RAISING, LOWERING}
+
+    WinchState winchState = WinchState.OFF;
 
 
     @Override
@@ -53,10 +60,14 @@ public class DeepTeleop extends XDriveTele {
                 bot.resetArm();
             }
 
+            // update toggles
             boolean lb2Toggled = toggleLB2.update(); // lower arm and adjust slide and wrist for picking up samples
             boolean b2andDPR2Toggled = toggleB2andDPR2.update(); // Bring slide all the way in
             boolean dpl2Toggled = toggleDPL2.update();  // Move arm to 70 degrees
             boolean dpd2Toggled = toggleDPD2.update();
+            boolean dpu2Toggled = toggleDPU2.update();
+            boolean dpu1Toggled = toggleDPU1.update();
+            boolean dpd1Toggled = toggleDPD1.update();
 
             double currentArmLength = bot.getSlideInches();
             double currentArmAngle = bot.getArmAngle();
@@ -64,7 +75,9 @@ public class DeepTeleop extends XDriveTele {
             double targetArmAngle = bot.getTargetArmAngle();
 
             // arm angle
-            if (dpl2Toggled && !resettingArm){
+            if (dpu2Toggled && !resettingArm){
+                bot.setTargetArmAngleSafe(0);
+            } else if (dpl2Toggled && !resettingArm){
                 bot.setTargetArmAngleSafe(70);
             } else if (lb2Toggled && !resettingArm){
                 bot.setTargetArmAngleSafe(-45);
@@ -129,6 +142,33 @@ public class DeepTeleop extends XDriveTele {
                 wristPos = 0;
             }
             bot.setWristPosition(wristPos);
+
+            // handle winch
+
+            switch (winchState){
+                case OFF:
+                    if (dpu1Toggled){
+                        winchState = WinchState.RAISING;
+                    } else if (dpd1Toggled){
+                        winchState = WinchState.LOWERING;
+                    }
+                    break;
+                case RAISING:
+                case LOWERING:
+                    if (dpu1Toggled || dpd1Toggled){
+                        winchState = WinchState.OFF;
+                    }
+            }
+
+
+            if (winchState == WinchState.RAISING){
+                bot.setWinchPower(1);
+            } else if (winchState == WinchState.LOWERING){
+                bot.setWinchPower(-1);
+            } else {
+                bot.setWinchPower(0);
+            }
+
 
             // report distances
             telemetry.addData("leftdistance", bot.getLeftDistance());

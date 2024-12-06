@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.logging.BetaLog;
 import org.firstinspires.ftc.teamcode.util.Pose;
 
 @Autonomous
-
+@Disabled
 public class LeftAutoPlus extends DeepBotAuto {
 
     DeepBot bot = new DeepBot();

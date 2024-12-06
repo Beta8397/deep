@@ -83,8 +83,9 @@ public class DeepBot extends XDrive {
 
         winchMotor = hwMap.get(DcMotorEx.class,"winchMotor");
         winchMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        winchMotor.setTargetPosition(0);
-        winchMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        winchMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        winchMotor.setTargetPosition(0);
+//        winchMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         wristServo = hwMap.get(Servo.class, "wristServo");
         clawServo = hwMap.get(Servo.class, "clawServo");
@@ -326,6 +327,10 @@ public class DeepBot extends XDrive {
     }
     public  double getBackDistance(){
         return  distBack.getDistance(DistanceUnit.INCH);
+    }
+
+    public void setWinchPower(double power){
+        winchMotor.setPower(power);
     }
 
 

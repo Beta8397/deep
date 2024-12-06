@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.deepbot.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
@@ -9,7 +10,7 @@ import org.firstinspires.ftc.teamcode.logging.BetaLog;
 import org.firstinspires.ftc.teamcode.util.Pose;
 
 @Autonomous
-
+@Disabled
 public class LeftAutoPlus2 extends DeepBotAuto {
 
     DeepBot bot = new DeepBot();
