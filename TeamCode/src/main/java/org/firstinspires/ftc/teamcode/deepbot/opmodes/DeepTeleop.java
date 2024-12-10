@@ -38,7 +38,7 @@ public class DeepTeleop extends XDriveTele {
     public void runOpMode(){
         bot.init(hardwareMap);
         super.setBot(bot);
-        bot.setPose(0,0,0);
+        bot.setPose(0,0,180);
 
         bot.closeClaw();
 
@@ -78,7 +78,7 @@ public class DeepTeleop extends XDriveTele {
             if (dpu2Toggled && !resettingArm){
                 bot.setTargetArmAngleSafe(0);
             } else if (dpl2Toggled && !resettingArm){
-                bot.setTargetArmAngleSafe(70);
+                bot.setTargetArmAngleSafe(72);
             } else if (lb2Toggled && !resettingArm){
                 bot.setTargetArmAngleSafe(-45);
             } else if (!resettingArm) {
@@ -162,17 +162,19 @@ public class DeepTeleop extends XDriveTele {
 
 
             if (winchState == WinchState.RAISING){
-                bot.setWinchPower(1);
+                bot.setWinchPosition(22800);
             } else if (winchState == WinchState.LOWERING){
-                bot.setWinchPower(-1);
+                bot.setWinchPosition(-2666);
             } else {
-                bot.setWinchPower(0);
+                bot.setWinchPosition(bot.winchMotor.getCurrentPosition());
             }
 
 
             // report distances
             telemetry.addData("leftdistance", bot.getLeftDistance());
             telemetry.addData("backdistance", bot.getBackDistance());
+            telemetry.addData("winch ticks",
+                    bot.winchMotor.getCurrentPosition());
 
             telemetry.update();
         }
