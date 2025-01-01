@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.deepbot.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
+import org.firstinspires.ftc.teamcode.util.SavedData;
 import org.firstinspires.ftc.teamcode.util.Toggle;
 import org.firstinspires.ftc.teamcode.xdrive.XDriveTele;
 
@@ -18,16 +20,25 @@ public class DeepTeleop extends XDriveTele {
     Toggle toggleDPU2 = new Toggle(()-> gamepad2.dpad_up);
     Toggle toggleDPU1 = new Toggle(()-> gamepad1.dpad_up);
     Toggle toggleDPD1 = new Toggle(()-> gamepad1.dpad_down);
+    Toggle toggleLB1 = new Toggle(()-> gamepad1.left_bumper);
+    Toggle toggleRB1 = new Toggle(()-> gamepad1.right_bumper);
 
-    boolean ascending =false;
     boolean resettingArm = false;
-    boolean clawOpen = true;
-    boolean wristUp = false;
 
-    private static final double WRIST_P0 = 0.642;
-    private static final double WRIST_GAIN = -270;
+    enum ClawState {OPEN, CLOSED, LOOSE};
+    ClawState clawState = ClawState.OPEN;
+
+    enum  YawState{LEFT, MID, RIGHT, CUSTOM};
+    YawState yawState = YawState.MID;
+
+    private static final double WRIST_P0 = 0.576;
+
+    private static final double WRIST_90 = 0.207;
+
+    private static final double WRIST_BACK = 0.576;
+    private static final double WRIST_GAIN = -245;
     private static final double DEFAULT_WRIST_ANGLE = 0;
-    private double targetWristAngle = DEFAULT_WRIST_ANGLE;
+    private double targetWristAngle = DEFAULT_WRIST_ANGLE + 90;
 
     enum WinchState{OFF, RAISING, LOWERING}
 
@@ -38,7 +49,7 @@ public class DeepTeleop extends XDriveTele {
     public void runOpMode(){
         bot.init(hardwareMap);
         super.setBot(bot);
-        bot.setPose(0,0,180);
+        bot.setPose(SavedData.pose.x,SavedData.pose.y,Math.toDegrees(SavedData.pose.h));
 
         bot.closeClaw();
 
@@ -82,9 +93,9 @@ public class DeepTeleop extends XDriveTele {
             } else if (lb2Toggled && !resettingArm){
                 bot.setTargetArmAngleSafe(-45);
             } else if (!resettingArm) {
-               bot.setTargetArmAngleSafe(targetArmAngle + gamepad2.left_stick_y * 1.0);
+               bot.setTargetArmAngleSafe(targetArmAngle + gamepad2.left_stick_y * 3.0);
             } else {
-                bot.setTargetArmAngleUnSafe(targetArmAngle + gamepad2.left_stick_y * 1.0);
+                bot.setTargetArmAngleUnSafe(targetArmAngle + gamepad2.left_stick_y * 3.0);
             }
 
 
@@ -96,9 +107,9 @@ public class DeepTeleop extends XDriveTele {
             } else if (b2andDPR2Toggled && !resettingArm){
                 bot.setTargetSlideLengthSafe(DeepBot.SLIDE_BASE_LENGTH);
             } else if (!resettingArm) {
-                bot.setTargetSlideLengthSafe(targetArmLength - gamepad2.right_stick_y * 0.4);
+                bot.setTargetSlideLengthSafe(targetArmLength - gamepad2.right_stick_y * 0.8);
             } else {
-                bot.setTargetSlideLengthUnSafe(targetArmLength - gamepad2.right_stick_y * 0.4);
+                bot.setTargetSlideLengthUnSafe(targetArmLength - gamepad2.right_stick_y * 0.8);
             }
 
             bot.updateArm();
@@ -108,17 +119,81 @@ public class DeepTeleop extends XDriveTele {
             telemetry.addData("armdegrees", currentArmAngle);
             telemetry.addData("slideinches", currentArmLength);
             telemetry.addData("LeftDist", bot.getLeftDistance());
+
             // handle claw
 
-            if (toggleRB2.update()){
-                clawOpen = !clawOpen;
-                if (clawOpen){
-                    bot.openClaw();
-                } else {
-                    bot.closeClaw();
+            boolean rb2Toggled = toggleRB2.update();
 
-                }
+            switch (clawState){
+                case OPEN:
+                    if (rb2Toggled){
+                        clawState = ClawState.CLOSED;
+                        bot.closeClaw();
+                    }
+                    break;
+                case CLOSED:
+                    if (rb2Toggled){
+                        clawState = ClawState.LOOSE;
+                        bot.loosenClaw();
+                    }
+                    break;
+                case LOOSE:
+                    if (rb2Toggled){
+                        clawState = ClawState.OPEN;
+                        bot.openClaw();
+                    }
             }
+
+            // handle yaw
+
+            boolean lb1Toggled = toggleLB1.update();
+
+            boolean rb1Toggled = toggleRB1.update();
+
+            double rightStickX1 = gamepad1.right_stick_x;
+
+            switch (yawState){
+                case LEFT:
+                case RIGHT:
+                case CUSTOM:
+                    if (lb1Toggled || rb1Toggled){
+                        yawState = YawState.MID;
+                        } else if (rightStickX1 < -0.05 || rightStickX1 > 0.05){
+                        yawState = YawState.CUSTOM;
+                    }
+                    break;
+                case MID:
+                    if (lb1Toggled){
+                        yawState = YawState.LEFT;
+                    } else if (rb1Toggled){
+                        yawState = YawState.RIGHT;
+                    } else if (rightStickX1 < -0.05 || rightStickX1 > 0.05){
+                        yawState = YawState.CUSTOM;
+                    }
+            }
+
+            telemetry.addData("Yaw State", yawState);
+
+
+
+            switch (yawState){
+                case LEFT:
+                    bot.setYawLeft();
+                    break;
+                case MID:
+                    bot.setYawStraight();
+                    break;
+                case RIGHT:
+                    bot.setYawRight();
+                    break;
+                case CUSTOM:
+                    double currentYawPos = bot.yawServo.getPosition();
+                    double yawPos = currentYawPos - 0.01 * rightStickX1;
+                    bot.setYawPosition(yawPos);
+                    telemetry.addData("YawPos", yawPos);
+            }
+
+
 
             // handle wrist
 
@@ -128,15 +203,15 @@ public class DeepTeleop extends XDriveTele {
             } else if (gamepad2.x){
                 targetWristAngle = DEFAULT_WRIST_ANGLE;
             } else if (gamepad2.y){
-                targetWristAngle = DEFAULT_WRIST_ANGLE - 90;
+                targetWristAngle = DEFAULT_WRIST_ANGLE + 90;
             } else {
                 targetWristAngle += wristChange;
             }
 
             double wristPos = WRIST_P0 + (targetWristAngle - currentArmAngle) / WRIST_GAIN;
-            if (wristPos > 1){
-                targetWristAngle = currentArmAngle + (1.0 - WRIST_P0) * WRIST_GAIN;
-                wristPos = 1;
+            if (wristPos > WRIST_P0){
+                targetWristAngle = currentArmAngle;
+                wristPos = WRIST_P0;
             }else if (wristPos < 0){
                 targetWristAngle = currentArmAngle + (0.0 - WRIST_P0) * WRIST_GAIN;
                 wristPos = 0;
@@ -149,24 +224,23 @@ public class DeepTeleop extends XDriveTele {
                 case OFF:
                     if (dpu1Toggled){
                         winchState = WinchState.RAISING;
+                        bot.winchMotor.setTargetPosition(22800);
+                        bot.winchMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        bot.winchMotor.setPower(1);
                     } else if (dpd1Toggled){
                         winchState = WinchState.LOWERING;
+                        bot.winchMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                        bot.winchMotor.setPower(-1);
                     }
                     break;
                 case RAISING:
                 case LOWERING:
                     if (dpu1Toggled || dpd1Toggled){
                         winchState = WinchState.OFF;
+                        bot.winchMotor.setTargetPosition(bot.winchMotor.getCurrentPosition());
+                        bot.winchMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        bot.winchMotor.setPower(1);
                     }
-            }
-
-
-            if (winchState == WinchState.RAISING){
-                bot.setWinchPosition(22800);
-            } else if (winchState == WinchState.LOWERING){
-                bot.setWinchPosition(-2666);
-            } else {
-                bot.setWinchPosition(bot.winchMotor.getCurrentPosition());
             }
 
 

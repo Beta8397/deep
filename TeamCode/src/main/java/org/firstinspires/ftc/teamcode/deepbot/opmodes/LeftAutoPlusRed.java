@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
 import org.firstinspires.ftc.teamcode.deepbot.DeepBotAuto;
+import org.firstinspires.ftc.teamcode.util.SavedData;
 
 @Autonomous
 
@@ -73,6 +74,8 @@ public class LeftAutoPlusRed extends DeepBotAuto {
                     bot.getPose().x, bot.getPose().y, Math.toDegrees(bot.getPose().h));
             telemetry.update();
         }
+
+        SavedData.pose = bot.getPose();
 
     }
 }

@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.IncludedFirmwareFileInfo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.i2c.MB1242Ex;
 import org.firstinspires.ftc.teamcode.xdrive.XDrive;
 import org.opencv.core.Mat;
 
@@ -22,19 +23,15 @@ public class DeepBot extends XDrive {
     public DcMotorEx winchMotor;
     public Servo wristServo;
     public Servo clawServo;
+    public Servo yawServo;
     public DistanceSensor distLeft;
     public  DistanceSensor distBack;
 
-    public static final int ARM_MIN = 0;
-    public static final int ARM_MAX = 6990;
-    public static final int SLIDE_MIN = 0;
-    public static final int SLIDE_MAX = 3000;
-    public static final double ARM_TICKS_PER_DEGREE = 65.6;  // Ticks on arm motor per degree elevation
+    public static final double ARM_TICKS_PER_DEGREE = 18.9;  // Ticks on arm motor per degree elevation
     public static final double SLIDE_TICKS_PER_INCH = 114.04;  // Ticks on slide motor per inch of travel
-    public static final double MIN_ARM_DEGREES = -45;   // Smallest (most negative) allowed arm angle
-    public static final double MAX_ARM_DEGREES = 74;    // Largest allowed arm angle
+    public static final double MIN_ARM_DEGREES = -47.7;   // Smallest (most negative) allowed arm angle
+    public static final double MAX_ARM_DEGREES = 75;    // Largest allowed arm angle
     public static final double MAX_SLIDE_LENGTH = 48;   // Maximum allowed slide length (arm motor shaft to end of slide)
-    public static final double MAX_ARM_UP_LENGTH = 30;
     public static final double SAFE_SLIDE_LENGTH = 33;  // Maximum slide length that will fit within 42" bounding box for all arm angles
     public static final double PAYLOAD_DIST_OFFSET = 1.75;  // Max distance from end of slide to end of payload, inches
     public static final double SAFE_ARM_ANGLE = 63;     // Min arm angle that respects 42" bounding box for all slide lengths
@@ -51,10 +48,13 @@ public class DeepBot extends XDrive {
     private double targetSlideLength = SLIDE_BASE_LENGTH;
     private double targetArmAngle = MIN_ARM_DEGREES;
 
-    public static final double CLAW_OPEN = 0.70;
-    public static final double CLAW_CLOSED = 0.50;
-    public static final double WRIST_UP = 0.8;
-    public static final double WRIST_DOWN = 0.45;
+    public static final double CLAW_OPEN = 0.16;
+    public static final double CLAW_CLOSED = 0;
+    public static final double CLAW_LOOSE = 0.08;
+
+    public static final double YAW_STRAIGHT = 0.4;
+    public static final double YAW_LEFT = 0.77;
+    public static final double YAW_RIGHT = 0.043;
 
 
     @Override
@@ -90,6 +90,7 @@ public class DeepBot extends XDrive {
 
         wristServo = hwMap.get(Servo.class, "wristServo");
         clawServo = hwMap.get(Servo.class, "clawServo");
+        yawServo = hwMap.get(Servo.class, "yawServo");
 
         distLeft = hwMap.get(DistanceSensor.class, "left_dist");
         distBack = hwMap.get(DistanceSensor.class, "back_dist");
@@ -315,13 +316,14 @@ public class DeepBot extends XDrive {
         setClawPosition(CLAW_OPEN);
     }
 
-    public void setWristUp() {
-        setWristPosition(WRIST_UP);
-    }
+    public void  loosenClaw(){setClawPosition(CLAW_LOOSE);}
 
-    public void setWristDown() {
-        setWristPosition(WRIST_DOWN);
-    }
+    public void  setYawPosition(double pos){yawServo.setPosition(pos);}
+
+    public void  setYawStraight(){setYawPosition(YAW_STRAIGHT);}
+    public void setYawRight(){setYawPosition(YAW_RIGHT);}
+    public void setYawLeft(){setYawPosition(YAW_LEFT);}
+
 
     public double getLeftDistance(){
         return distLeft.getDistance(DistanceUnit.INCH);
