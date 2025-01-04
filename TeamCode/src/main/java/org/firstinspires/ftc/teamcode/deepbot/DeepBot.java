@@ -50,8 +50,6 @@ public class DeepBot extends XDrive {
 
     public static final double CLAW_OPEN = 0.16;
     public static final double CLAW_CLOSED = 0;
-    public static final double CLAW_LOOSE = 0.08;
-
     public static final double YAW_STRAIGHT = 0.4;
     public static final double YAW_LEFT = 0.77;
     public static final double YAW_RIGHT = 0.043;
@@ -315,8 +313,6 @@ public class DeepBot extends XDrive {
     public void openClaw() {
         setClawPosition(CLAW_OPEN);
     }
-
-    public void  loosenClaw(){setClawPosition(CLAW_LOOSE);}
 
     public void  setYawPosition(double pos){yawServo.setPosition(pos);}
 

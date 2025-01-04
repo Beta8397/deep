@@ -28,7 +28,7 @@ public abstract class DeepBotAuto extends XDriveAuto {
         XDrive.OtosLocalizer loc =  bot.getLocalizer();
         bot.setClawPosition(DeepBot.CLAW_CLOSED);
         bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH);
-        bot.setWristPosition(0);
+        bot.setWristPosition(0.3);
         telemetry.addData("Let Go Of Bot", "");
         telemetry.update();
         sleep(3000);
