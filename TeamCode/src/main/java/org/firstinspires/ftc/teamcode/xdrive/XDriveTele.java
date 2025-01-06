@@ -2,9 +2,6 @@ package org.firstinspires.ftc.teamcode.xdrive;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Pose;
 import org.firstinspires.ftc.teamcode.util.Toggle;
 
@@ -16,7 +13,6 @@ public class XDriveTele extends LinearOpMode {
     private Toggle toggleA1 = new Toggle(()-> gamepad1.a);
     private  Toggle toggleB1 = new Toggle(()-> gamepad1.b);
     private Toggle toggleX1 = new Toggle(()-> gamepad1.x);
-    private Toggle toggleY1 = new Toggle(()-> gamepad1.y);
     boolean slowMode = true;
     double speedDivider = 4;
     boolean fieldcentric = true;
@@ -30,13 +26,8 @@ public class XDriveTele extends LinearOpMode {
         bot.init(hardwareMap);
         bot.setPose(0, 0, 180);
 
-        while (opModeInInit()){
-            if (toggleB1.update()){
-                Alliance.alliance = Alliance.alliance == Alliance.BLUE? Alliance.RED:Alliance.BLUE;
-            }
-            telemetry.addData("ALLIANCE", Alliance.alliance);
-            telemetry.update();
-        }
+        waitForStart();
+
         toggleB1.update();
 
         while (opModeIsActive()){

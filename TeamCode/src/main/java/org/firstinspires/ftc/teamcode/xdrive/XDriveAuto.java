@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.xdrive;
 
+import android.util.Pair;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -8,6 +10,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.MagneticFlux;
 import org.firstinspires.ftc.teamcode.util.MotionProfile;
 import org.firstinspires.ftc.teamcode.util.Pose;
 import org.firstinspires.ftc.teamcode.util.QuinticSpline2D;
+
+import java.util.LinkedList;
 
 
 public abstract class XDriveAuto extends LinearOpMode {
@@ -367,8 +371,51 @@ public abstract class XDriveAuto extends LinearOpMode {
         return new VectorF(vBot.get(0) * sinTheta + vBot.get(1) * cosTheta, -vBot.get(0) * cosTheta + vBot.get(1) * sinTheta);
     }
 
+    public class ProgressChecker {
+        private LinkedList<Pair<Double, Pose>> queue = new LinkedList<>();
+        private double interval;
 
+        public ProgressChecker(double millis){
+            interval = millis;
+            queue.add(new Pair<>(System.nanoTime()/1000000.0, bot.getPose()));
+        }
 
+        public Pair<Double,Pose> check(){
+            double currentMillis = System.nanoTime()/1000000.0;
+            Pose currentPose = bot.getPose();
+
+            Pair<Double, Pose> queuePeek = queue.peek();
+            if (queuePeek == null) {
+                queue.add(new Pair<>(currentMillis, currentPose));
+                return null;
+            }
+            double queuePeekMillis = queuePeek.first.doubleValue();
+            double elapsedMillis = currentMillis - queuePeekMillis;
+            if (elapsedMillis < interval) {
+                queue.add(new Pair<>(currentMillis, currentPose));
+                return null;
+            }
+            Pose queuePeekPose = queuePeek.second;
+            Pose progress = new Pose(currentPose.x-queuePeekPose.x, currentPose.y-queuePeekPose.y,
+                    currentPose.h-queuePeekPose.h);
+
+            while (elapsedMillis > interval) {
+                queue.remove();
+                queuePeek = queue.peek();
+                if (queuePeek == null) {
+                    queue.add(new Pair<>(currentMillis, currentPose));
+                    return null;
+                }
+                queuePeekMillis = queuePeek.first.doubleValue();
+                elapsedMillis = currentMillis - queuePeekMillis;
+                progress = new Pose(currentPose.x-queuePeekPose.x, currentPose.y-queuePeekPose.y,
+                        currentPose.h-queuePeekPose.h);
+            }
+
+            queue.add(new Pair<Double,Pose>(currentMillis, currentPose));
+            return new Pair<Double,Pose>(elapsedMillis, progress);
+        }
+    }
 
 
 
