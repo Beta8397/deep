@@ -4,6 +4,8 @@ import android.util.Pair;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.Predicate;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.MagneticFlux;
@@ -354,6 +356,32 @@ public abstract class XDriveAuto extends LinearOpMode {
         }
 
         bot.setDriveSpeed(0,0,0);
+    }
+
+
+    public  void driveUntilStopped(double speed, double directionDegrees,
+                                   Predicate<Pose> pred){
+        double heading = bot.getPose().h;
+        double directionRadians = Math.toRadians(directionDegrees);
+        VectorF vField = new VectorF((float) (speed * Math.cos(directionRadians)),
+                (float) (speed * Math.sin(directionRadians)));
+        VectorF vRobot = fieldToBot(vField, heading);
+        bot.setDriveSpeed(vRobot.get(0), vRobot.get(1), 0);
+
+        ProgressChecker pc = new ProgressChecker(500);
+        ElapsedTime et = new ElapsedTime();
+
+        while (opModeIsActive()){
+            bot.updateOdometry();
+            Pair<Double,Pose> progress = pc.check();
+            if (et.milliseconds() > 500 && progress != null
+            && pred.test(progress.second)){
+                break;
+            }
+        }
+
+        bot.setDriveSpeed(0,0,0);
+
     }
 
 
