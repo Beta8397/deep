@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode.deepbot;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.logging.BetaLog;
+import org.firstinspires.ftc.teamcode.util.Localizer;
 import org.firstinspires.ftc.teamcode.util.MotionProfile;
 import org.firstinspires.ftc.teamcode.util.Pose;
 import org.firstinspires.ftc.teamcode.util.Predicate;
@@ -25,18 +25,20 @@ public abstract class DeepBotAuto extends XDriveAuto {
     }
 
     public void autoWaitForStart(){
-        XDrive.OtosLocalizer loc =  bot.getLocalizer();
         bot.setClawPosition(DeepBot.CLAW_CLOSED);
         bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH);
-        bot.setWristPosition(0.2);
+        bot.setWristPosition(0.25);
         bot.setYawStraight();
         telemetry.addData("Let Go Of Bot", "");
         telemetry.update();
         sleep(3000);
-        loc.calibrateIMU();
-        while(opModeInInit() && loc.getCalibrationProgress()>0){
-            telemetry.addData("Calibrating...", "");
-            telemetry.update();
+        Localizer loc = bot.getLocalizer();
+        if (loc instanceof XDrive.OtosLocalizer) {
+            ((XDrive.OtosLocalizer)loc).calibrateIMU();
+            while (opModeInInit() && ((XDrive.OtosLocalizer)loc).getCalibrationProgress() > 0) {
+                telemetry.addData("Calibrating...", "");
+                telemetry.update();
+            }
         }
 
         telemetry.addData("Press START when ready...", "");
@@ -172,6 +174,25 @@ public abstract class DeepBotAuto extends XDriveAuto {
         }
 
         bot.setDrivePower(0, 0, 0);
+    }
+
+    public void setArmForWallPickup(){
+        bot.setSlideInches(20);
+        bot.setArmDegrees(-17.5);
+        bot.setWristPosition(0.5);
+        bot.openClaw();
+    }
+
+    public void setArmForSpecimenHang1(){
+        bot.setArmDegrees(21);
+        bot.setSlideInches(20);
+        bot.setWristPosition(0.5);
+    }
+
+    public void setArmForSpecimenHang2(){
+        bot.setArmDegrees(22.5);
+        bot.setSlideInches(20);
+        bot.setWristPosition(0.5);
     }
 
 

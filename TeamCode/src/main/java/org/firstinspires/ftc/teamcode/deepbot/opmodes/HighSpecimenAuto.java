@@ -1,13 +1,9 @@
 package org.firstinspires.ftc.teamcode.deepbot.opmodes;
 
-import android.util.Pair;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
 import org.firstinspires.ftc.teamcode.deepbot.DeepBotAuto;
-import org.firstinspires.ftc.teamcode.util.Pose;
 
 @Autonomous
 public class HighSpecimenAuto extends DeepBotAuto {
@@ -23,69 +19,49 @@ public class HighSpecimenAuto extends DeepBotAuto {
         autoWaitForStart();
 
         bot.setPose(0, 7.5, 90);
-
-        bot.setArmDegrees(21);
-        bot.setSlideInches(20);
-        bot.setWristPosition(0.5);
-
+        setArmForSpecimenHang1();
 
         driveTo(normalSpeed, 0, 39, 90, 1);
+        driveTo(normalSpeed, 0, 42, 90, 0.5);
 
-        driveUntilStopped(8, 90, p->p.y < 0.5);
-
-//
-//        bot.setDriveSpeed(0,8,0);
-//        ProgressChecker pc = new ProgressChecker(500);
-//        ElapsedTime et = new ElapsedTime();
-//        while(opModeIsActive()){
-//            bot.updateOdometry();
-//            if(et.milliseconds()> 500){
-//                Pair<Double, Pose> progress = pc.check();
-//                if (progress != null  && progress.second.y < 0.5){
-//                    break;
-//                }
-//            }
-//        }
-//
-//        bot.setDriveSpeed(0,0,0);
 
         bot.openClaw();
         sleep(300);
         bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH);
 
         bot.setPose(bot.getPose().x, 41, 90);
-        driveTo(fast, 28, 24, 90, 1);
-        driveTo(fast, 28, 58, 90, 1);
-        driveTo(fast, 45, 58, 90, 1);
+        driveTo(fast, 34, 30, 90, 1);
+        driveTo(fast, 34, 60, 90, 1);
+        driveTo(fast, 46.5, 60, 90, 1);
         turnTo(-90, 90, 8, 2);
+
+//        TODO: use left distance sensor to adjust x
+
         bot.setArmDegrees(30);
-        driveTo(fast, 45, 18, -90, 1);
-
-        driveUntilStopped(8, -90, p->p.y > -0.5);
-
-//        bot.setDriveSpeed(0,8,0);
-//        pc = new ProgressChecker(500);
-//        et.reset();
-//        while(opModeIsActive()){
-//            bot.updateOdometry();
-//            if(et.milliseconds()> 500){
-//                Pair<Double, Pose> progress = pc.check();
-//                if (progress != null  && progress.second.y > -0.5){
-//                    break;
-//                }
-//            }
-//        }
-//        bot.setDrivePower(0, 0 ,0 );
+        driveTo(fast, 46.5, 9, -90, 1);
+        driveTo(slow, 46.5 , 4, -90, 1);
+        bot.setPose(bot.getPose().x, 7.5, -90);
 
 
-        bot.setPose(bot.getPose().x, 7.5, Math.toDegrees(bot.getPose().h));
-        driveTo(fast, 45, 28, -90, 1);
-        bot.setSlideInches(20);
-        bot.setArmDegrees(-15);
-        bot.setWristPosition(0.5);
-        bot.openClaw();
+        driveTo(normalSpeed, 46.5, 32, -90, 1);
         sleep(3000);
-        driveTo(normalSpeed, 45, 24, -90, .5);
+        setArmForWallPickup();
+        driveTo(normalSpeed, 46.5, 18, -90, .5);
+        bot.closeClaw();
+        sleep(400);
+
+        setArmForSpecimenHang2();
+        driveTo(fast, 6, 24,-90,1);
+        turnTo(90, 90, 8, 2);
+        driveTo(normalSpeed, 6, 43, 90, 0.5);
+        bot.openClaw();
+        sleep(300);
+        bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH);
+        driveTo(fast, 12, 20, 90, 1);
+        bot.setArmDegrees(DeepBot.MIN_ARM_DEGREES);
+        driveTo(fast, 48, 20, 90, 1);
+
+
 
 
         while (opModeIsActive()){

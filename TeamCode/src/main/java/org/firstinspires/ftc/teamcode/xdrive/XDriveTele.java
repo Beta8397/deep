@@ -24,7 +24,7 @@ public class XDriveTele extends LinearOpMode {
     public void runOpMode(){
         bot = new XDrive();
         bot.init(hardwareMap);
-        bot.setPose(0, 0, 180);
+        bot.setPose(0, 0, 0);
 
         waitForStart();
 
@@ -32,6 +32,9 @@ public class XDriveTele extends LinearOpMode {
 
         while (opModeIsActive()){
             oneDriveCycle();
+            telemetry.addData("ticks", "bl %d  fl %d  fr %d  br %d",
+                    bot.bl.getCurrentPosition(), bot.fl.getCurrentPosition(),
+                    bot.fr.getCurrentPosition(), bot.br.getCurrentPosition());
             telemetry.update();
         }
     }

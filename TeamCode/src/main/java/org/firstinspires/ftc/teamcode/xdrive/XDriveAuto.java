@@ -361,7 +361,8 @@ public abstract class XDriveAuto extends LinearOpMode {
 
     public  void driveUntilStopped(double speed, double directionDegrees,
                                    Predicate<Pose> pred){
-        double heading = bot.getPose().h;
+        Pose pose = bot.getPose();
+        double heading = pose.h;
         double directionRadians = Math.toRadians(directionDegrees);
         VectorF vField = new VectorF((float) (speed * Math.cos(directionRadians)),
                 (float) (speed * Math.sin(directionRadians)));
@@ -370,6 +371,8 @@ public abstract class XDriveAuto extends LinearOpMode {
 
         ProgressChecker pc = new ProgressChecker(500);
         ElapsedTime et = new ElapsedTime();
+
+        bot.otosLoc.setPose(pose.x, pose.y, Math.toDegrees(pose.h));
 
         while (opModeIsActive()){
             bot.updateOdometry();
@@ -410,7 +413,7 @@ public abstract class XDriveAuto extends LinearOpMode {
 
         public Pair<Double,Pose> check(){
             double currentMillis = System.nanoTime()/1000000.0;
-            Pose currentPose = bot.getPose();
+            Pose currentPose = bot.otosLoc.getPose();
 
             Pair<Double, Pose> queuePeek = queue.peek();
             if (queuePeek == null) {

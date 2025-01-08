@@ -15,9 +15,9 @@ import java.util.List;
 public class XDrive {
 
     // TODO: Set values of TICKS_PER_INCH, STRAFE_RATIO, TICKS_PER_RAD, and MAX_TICKS_PER_SEC for the actual robot
-    public static final double TICKS_PER_INCH = 30.25; // Ticks per inch (TPI) of forward travel
+    public static final double TICKS_PER_INCH = 33.45; // Ticks per inch (TPI) of forward travel
     public static final double STRAFE_RATIO = 1.0; // Ratio of TPI for strafe to TPI for forward travel
-    public static final double TICKS_PER_RAD = 324.7; // Ticks per radian that robot heading changes
+    public static final double TICKS_PER_RAD = 318.7; // Ticks per radian that robot heading changes
     public static final double MAX_TICKS_PER_SEC = 2500; // Maximum achievable Ticks per Second
     public static final double SQRT2 = Math.sqrt(2);
 
@@ -29,7 +29,8 @@ public class XDrive {
     private Pose pose = new Pose(0, 0, 0);
     private Pose velocity = new Pose(0, 0, 0);
 
-    public OtosLocalizer localizer;
+    public Localizer localizer;
+    public OtosLocalizer otosLoc;
 
     public void init(HardwareMap hwMap){
 
@@ -66,20 +67,23 @@ public class XDrive {
         fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-//        imu = hwMap.get(IMU.class, "imu");
+        imu = hwMap.get(IMU.class, "imu");
 
-        // TODO: Set RevHub orientation correctly for the real robot
-//        imu.initialize(new IMU.Parameters(
-//                new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.RIGHT, RevHubOrientationOnRobot.UsbFacingDirection.BACK)));
-//        ElapsedTime et = new ElapsedTime();
-//        while (et.milliseconds() < 150 && !Thread.currentThread().isInterrupted()) continue;
+         //TODO: Set RevHub orientation correctly for the real robot
+        imu.initialize(new IMU.Parameters(
+                new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.RIGHT, RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD)));
+        ElapsedTime et = new ElapsedTime();
+        while (et.milliseconds() < 150 && !Thread.currentThread().isInterrupted()) continue;
+
+
+        localizer = new DriveLocalizer();
 
 
         SparkFunOTOS otos = hwMap.get(SparkFunOTOS.class, "sensor_otos");
-        localizer = new OtosLocalizer(otos);
+        otosLoc = new OtosLocalizer(otos);
     }
 
-    public OtosLocalizer getLocalizer(){
+    public Localizer getLocalizer(){
         return localizer;
     }
 
@@ -95,7 +99,9 @@ public class XDrive {
     }
 
     public void refreshPose(){
-        localizer.refreshPose();
+        if (localizer instanceof OtosLocalizer) {
+            ((OtosLocalizer)localizer).refreshPose();
+        }
     }
 
     public void setDrivePower(double px, double py, double pa){
