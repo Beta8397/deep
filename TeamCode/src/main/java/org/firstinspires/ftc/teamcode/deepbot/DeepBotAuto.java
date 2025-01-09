@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.deepbot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.logging.BetaLog;
 import org.firstinspires.ftc.teamcode.util.Localizer;
 import org.firstinspires.ftc.teamcode.util.MotionProfile;
@@ -190,9 +191,21 @@ public abstract class DeepBotAuto extends XDriveAuto {
     }
 
     public void setArmForSpecimenHang2(){
-        bot.setArmDegrees(22.5);
+        bot.setArmDegrees(23.5);
         bot.setSlideInches(20);
         bot.setWristPosition(0.5);
+    }
+
+    public double getXFromLeftDistance(){
+        double sum = 0;
+        for (int i = 0; i < 3; i++){
+            sum += bot.getLeftDistance();
+            if (!opModeIsActive()){
+                break;
+            }
+        }
+        double avg = sum / 3.0;
+        return 64.5 - avg;
     }
 
 

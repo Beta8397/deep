@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.deepbot;
 
 import android.net.MailTo;
 
+import com.qualcomm.hardware.maxbotix.MaxSonarI2CXL;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -26,6 +27,7 @@ public class DeepBot extends XDrive {
     public Servo yawServo;
     public DistanceSensor distLeft;
     public  DistanceSensor distBack;
+    public MaxSonarI2CXL sonicLeft;
 
     public static final double ARM_TICKS_PER_DEGREE = 18.9;  // Ticks on arm motor per degree elevation
     public static final double SLIDE_TICKS_PER_INCH = 114.04;  // Ticks on slide motor per inch of travel
@@ -92,6 +94,7 @@ public class DeepBot extends XDrive {
 
         distLeft = hwMap.get(DistanceSensor.class, "left_dist");
         distBack = hwMap.get(DistanceSensor.class, "back_dist");
+//        sonicLeft = hwMap.get(MaxSonarI2CXL.class, "Sonic");
 
 
     }

@@ -34,10 +34,10 @@ public class XDrive {
 
     public void init(HardwareMap hwMap){
 
-//        List<LynxModule> allHubs = hwMap.getAll(LynxModule.class);
-//        for (LynxModule hub: allHubs){
-//            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-//        }
+        List<LynxModule> allHubs = hwMap.getAll(LynxModule.class);
+        for (LynxModule hub: allHubs){
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
 
         // Get the DC Motors
         bl = hwMap.get(DcMotorEx.class, "back_left_motor");

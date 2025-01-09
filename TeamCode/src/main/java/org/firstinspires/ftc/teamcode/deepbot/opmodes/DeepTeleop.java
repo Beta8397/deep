@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.deepbot.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
 import org.firstinspires.ftc.teamcode.util.SavedData;
 import org.firstinspires.ftc.teamcode.util.Toggle;
@@ -243,6 +244,7 @@ public class DeepTeleop extends XDriveTele {
             // report distances
             telemetry.addData("leftdistance", bot.getLeftDistance());
             telemetry.addData("backdistance", bot.getBackDistance());
+            telemetry.addData("sonic distance", bot.sonicLeft.getDistanceAsync(50, DistanceUnit.INCH));
             telemetry.addData("winch ticks",
                     bot.winchMotor.getCurrentPosition());
 
