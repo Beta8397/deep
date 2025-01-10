@@ -244,7 +244,7 @@ public class DeepTeleop extends XDriveTele {
             // report distances
             telemetry.addData("leftdistance", bot.getLeftDistance());
             telemetry.addData("backdistance", bot.getBackDistance());
-            telemetry.addData("sonic distance", bot.sonicLeft.getDistanceAsync(50, DistanceUnit.INCH));
+           telemetry.addData("sonic distance", bot.sonicLeft.getDistanceAsync(50, DistanceUnit.INCH));
             telemetry.addData("winch ticks",
                     bot.winchMotor.getCurrentPosition());
 

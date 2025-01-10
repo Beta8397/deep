@@ -17,6 +17,9 @@ public class TestDeepArm extends LinearOpMode {
 
     public void runOpMode(){
         bot.init(hardwareMap);
+        bot.setTargetArmAngleSafe(DeepBot.MIN_ARM_DEGREES);
+        bot.setTargetSlideLengthSafe(DeepBot.SLIDE_BASE_LENGTH);
+        bot.updateArm();
         waitForStart();
         while (opModeIsActive()){
             if (toggleA1.update()){

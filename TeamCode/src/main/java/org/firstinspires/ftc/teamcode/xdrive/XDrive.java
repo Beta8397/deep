@@ -79,8 +79,8 @@ public class XDrive {
         localizer = new DriveLocalizer();
 
 
-        SparkFunOTOS otos = hwMap.get(SparkFunOTOS.class, "sensor_otos");
-        otosLoc = new OtosLocalizer(otos);
+//        SparkFunOTOS otos = hwMap.get(SparkFunOTOS.class, "sensor_otos");
+//        otosLoc = new OtosLocalizer(otos);
     }
 
     public Localizer getLocalizer(){

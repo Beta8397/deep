@@ -63,7 +63,7 @@ public class HighSpecimen2 extends DeepBotAuto {
 
         // hangs second specimen
 
-        driveTo(fast, 6, 24,-90,1);
+        driveTo(fast, 6, 21,-90,1);
         turnTo(90, 90, 8, 2);
         driveTo(normalSpeed, 6, 43, 90, 0.5);
         bot.openClaw();

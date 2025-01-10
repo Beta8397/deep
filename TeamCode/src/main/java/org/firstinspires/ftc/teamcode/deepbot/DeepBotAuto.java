@@ -179,7 +179,7 @@ public abstract class DeepBotAuto extends XDriveAuto {
 
     public void setArmForWallPickup(){
         bot.setSlideInches(20);
-        bot.setArmDegrees(-17.5);
+        bot.setArmDegrees(-16.5);
         bot.setWristPosition(0.5);
         bot.openClaw();
     }
@@ -191,21 +191,13 @@ public abstract class DeepBotAuto extends XDriveAuto {
     }
 
     public void setArmForSpecimenHang2(){
-        bot.setArmDegrees(23.5);
-        bot.setSlideInches(20);
+        bot.setArmDegrees(24.5);
+        bot.setSlideInches(21);
         bot.setWristPosition(0.5);
     }
 
-    public double getXFromLeftDistance(){
-        double sum = 0;
-        for (int i = 0; i < 3; i++){
-            sum += bot.getLeftDistance();
-            if (!opModeIsActive()){
-                break;
-            }
-        }
-        double avg = sum / 3.0;
-        return 64.5 - avg;
+    public double getXFromSonic(){
+        return 64.0 - bot.sonicLeft.getDistanceAsync(50, DistanceUnit.INCH);
     }
 
 

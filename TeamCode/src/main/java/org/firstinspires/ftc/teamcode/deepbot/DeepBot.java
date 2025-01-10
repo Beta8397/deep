@@ -94,7 +94,7 @@ public class DeepBot extends XDrive {
 
         distLeft = hwMap.get(DistanceSensor.class, "left_dist");
         distBack = hwMap.get(DistanceSensor.class, "back_dist");
-//        sonicLeft = hwMap.get(MaxSonarI2CXL.class, "Sonic");
+        sonicLeft = hwMap.get(MaxSonarI2CXL.class, "Sonic");
 
 
     }
