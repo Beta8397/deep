@@ -83,7 +83,7 @@ public class DeepTeleop extends XDriveTele {
             } else if (dpl2Toggled && !resettingArm) {
                 bot.setTargetArmAngleSafe(34);
             } else if (dpd2Toggled && !resettingArm) {
-                bot.setTargetArmAngleSafe(-15);
+                bot.setTargetArmAngleSafe(20);
             } else if (dpr2Toggled){
                 bot.setTargetArmAngleSafe(-16);
             }else if (!resettingArm) {
@@ -100,7 +100,7 @@ public class DeepTeleop extends XDriveTele {
             } else if (dpl2Toggled && !resettingArm) {
                 bot.setTargetSlideLengthSafe(22);
             } else if (dpd2Toggled && !resettingArm) {
-                bot.setTargetSlideLengthSafe(21);
+                bot.setTargetSlideLengthSafe(20);
             } else if (dpr2Toggled){
                 bot.setTargetSlideLengthSafe(22);
             } else if (!resettingArm) {
@@ -221,7 +221,7 @@ public class DeepTeleop extends XDriveTele {
                 case OFF:
                     if (dpu1Toggled){
                         winchState = WinchState.RAISING;
-                        bot.winchMotor.setTargetPosition(22800);
+                        bot.winchMotor.setTargetPosition(23300);
                         bot.winchMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         bot.winchMotor.setPower(1);
                     } else if (dpd1Toggled){

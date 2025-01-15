@@ -49,7 +49,7 @@ public class HighSpecimen2 extends DeepBotAuto {
 
         bot.setArmDegrees(30);
         driveTo(fast, 46.5, 9, -90, 1);
-        driveTo(slow, 46.5 , 4, -90, 1);
+        driveTo(slow, 46.5 , 1, -90, 1);
         bot.setPose(bot.getPose().x, 7.5, -90);
 
         // backup, set arm position, pickup specimen from wall

@@ -191,7 +191,7 @@ public abstract class DeepBotAuto extends XDriveAuto {
     }
 
     public void setArmForSpecimenHang2(){
-        bot.setArmDegrees(24.5);
+        bot.setArmDegrees(23.5);
         bot.setSlideInches(21);
         bot.setWristPosition(0.5);
     }
