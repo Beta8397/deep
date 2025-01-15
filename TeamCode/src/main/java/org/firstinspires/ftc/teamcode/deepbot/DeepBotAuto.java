@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.deepbot;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.logging.BetaLog;
@@ -197,7 +198,25 @@ public abstract class DeepBotAuto extends XDriveAuto {
     }
 
     public double getXFromSonic(){
-        return 64.0 - bot.sonicLeft.getDistanceAsync(50, DistanceUnit.INCH);
+        return 64.0 - bot.sonicLeft.getDistanceAsync(25, DistanceUnit.INCH);
+    }
+
+    public class SonicXAdjuster implements Runnable{
+        public SonicXAdjuster(){
+            bot.sonicLeft.getDistanceAsync(0, DistanceUnit.INCH);
+        }
+        public void run(){
+            double dist = bot.sonicLeft.getDistanceAsync(25, DistanceUnit.INCH);
+            if (dist<0){
+                return;
+            }
+            double xMeas = 64.0 - dist;
+            if (Math.abs(xMeas - bot.getPose().x) > 4){
+                return;
+            }
+            double xEst = 0.25*xMeas + 0.75*bot.getPose().x;
+            bot.setPose(xEst, bot.getPose().y, Math.toDegrees(bot.getPose().h));
+        }
     }
 
 

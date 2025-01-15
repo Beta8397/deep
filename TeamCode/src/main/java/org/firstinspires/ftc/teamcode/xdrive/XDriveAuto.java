@@ -74,6 +74,39 @@ public abstract class XDriveAuto extends LinearOpMode {
         bot.setDrivePower(0, 0, 0);
     }
 
+
+    public void driveLine(MotionProfile mProf, Pose p0, Pose p1, double tolerance){
+        VectorF lineDir = new VectorF((float)(p1.x-p0.x), (float)(p1.y-p0.y));
+        float totalDist = lineDir.magnitude();
+        lineDir = lineDir.multiplied(1.0f/totalDist);
+
+        while (opModeIsActive()){
+            bot.updateOdometry();
+            Pose pose = bot.getPose();
+
+            if (Math.sqrt( (p1.x-pose.x)*(p1.x-pose.x) + (p1.y-pose.y)*(p1.y-pose.y)) < tolerance){
+                break;
+            }
+
+            VectorF vPose0 = new VectorF((float)(pose.x-p0.x), (float)(pose.y-p0.y));
+            float d0 = vPose0.dotProduct(lineDir);  // how far we've gone
+            VectorF vPose1 = new VectorF((float)(p1.x-pose.x), (float)(p1.y-pose.y));
+            float d1 = vPose1.dotProduct(lineDir);  // how far we have to go
+            float err = lineDir.get(0)*vPose0.get(1) - lineDir.get(1)*vPose0.get(0); // distance from pose to line
+            VectorF vErr = new VectorF(-err*lineDir.get(1), err*lineDir.get(0));    // Linear error vector
+            float speed0 = (float)Math.sqrt(mProf.vMin*mProf.vMin + 2.0*Math.abs(d0)*mProf.accel);
+            float speed1 = (float)Math.sqrt(mProf.vMin*mProf.vMin + 2.0*Math.abs(d1)*mProf.accel);
+            float speed = (float)Math.min(mProf.vMax, Math.min(speed0, speed1));
+            VectorF baseVel = lineDir.multiplied(speed*Math.signum(d1));
+            VectorF corrVel = vErr.multiplied(-4.0f);
+            VectorF velRobot = fieldToBot(baseVel.added(corrVel), pose.h);
+            double va = 4.0 * AngleUnit.normalizeRadians(p1.h-pose.h);
+            bot.setDriveSpeed(velRobot.get(0), velRobot.get(1), va);
+        }
+        bot.setDriveSpeed(0,0,0);
+        bot.updateOdometry();
+    }
+
     public void jogTo(MotionProfile mProf, double targetX, double targetY, double targetHeadingDegrees,
                       double tolerance, boolean rightFirst){
         Pose pose = bot.getPose();
@@ -107,6 +140,40 @@ public abstract class XDriveAuto extends LinearOpMode {
 
             if (Math.abs(offset) < toleranceRadians && Math.abs(velocity.h) < 0.5){
                 break;
+            }
+
+            double va = coeff * offset;
+            if (Math.abs(va) > vaMaxRadians){
+                va = vaMaxRadians * Math.signum(va);
+            }
+
+            bot.setDriveSpeed(0, 0, va);
+        }
+
+        bot.setDrivePower(0, 0, 0);
+    }
+
+
+    public void turnTo(double targetHeadingDegrees, double vaMaxDegrees, double coeff,
+                       boolean clockwise, double toleranceDegrees){
+        double targetHeadingRadians = Math.toRadians(targetHeadingDegrees);
+        double vaMaxRadians = Math.toRadians(vaMaxDegrees);
+        double toleranceRadians = Math.toRadians(toleranceDegrees);
+
+        while (opModeIsActive()){
+            bot.updateOdometry();
+            Pose pose = bot.getPose();
+            Pose velocity = bot.getVelocity();
+            double offset = AngleUnit.normalizeRadians(targetHeadingRadians - pose.h);
+
+            if (Math.abs(offset) < toleranceRadians && Math.abs(velocity.h) < 0.5){
+                break;
+            }
+
+            if (clockwise && offset>0.5){
+                offset -= 2*Math.PI;
+            } else if (!clockwise && offset<-0.5){
+                offset += 2*Math.PI;
             }
 
             double va = coeff * offset;
