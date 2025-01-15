@@ -154,6 +154,40 @@ public abstract class XDriveAuto extends LinearOpMode {
     }
 
 
+    public void turnTo(double targetHeadingDegrees, double vaMaxDegrees, double coeff,
+                       boolean clockwise, double toleranceDegrees){
+        double targetHeadingRadians = Math.toRadians(targetHeadingDegrees);
+        double vaMaxRadians = Math.toRadians(vaMaxDegrees);
+        double toleranceRadians = Math.toRadians(toleranceDegrees);
+
+        while (opModeIsActive()){
+            bot.updateOdometry();
+            Pose pose = bot.getPose();
+            Pose velocity = bot.getVelocity();
+            double offset = AngleUnit.normalizeRadians(targetHeadingRadians - pose.h);
+
+            if (Math.abs(offset) < toleranceRadians && Math.abs(velocity.h) < 0.5){
+                break;
+            }
+
+            if (clockwise && offset>0.5){
+                offset -= 2*Math.PI;
+            } else if (!clockwise && offset<-0.5){
+                offset += 2*Math.PI;
+            }
+
+            double va = coeff * offset;
+            if (Math.abs(va) > vaMaxRadians){
+                va = vaMaxRadians * Math.signum(va);
+            }
+
+            bot.setDriveSpeed(0, 0, va);
+        }
+
+        bot.setDrivePower(0, 0, 0);
+    }
+
+
     /**
      * Drive quintic spline from current position and heading to target position and heading.
      * @param mProf     Min and max speed, acceleration
