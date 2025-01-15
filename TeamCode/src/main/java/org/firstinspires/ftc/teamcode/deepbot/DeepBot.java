@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.deepbot;
 
-import android.net.MailTo;
-
 import com.qualcomm.hardware.maxbotix.MaxSonarI2CXL;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -9,13 +7,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.IncludedFirmwareFileInfo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.i2c.MB1242Ex;
 import org.firstinspires.ftc.teamcode.xdrive.XDrive;
-import org.opencv.core.Mat;
 
 public class DeepBot extends XDrive {
 
