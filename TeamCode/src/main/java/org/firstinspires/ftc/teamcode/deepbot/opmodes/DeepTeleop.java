@@ -16,6 +16,7 @@ public class DeepTeleop extends XDriveTele {
     DeepBot bot = new DeepBot();
     Toggle toggleA2 = new Toggle(()->gamepad2.a);   // Reset Arm
     Toggle toggleRB2 = new Toggle(()->gamepad2.right_bumper);   // Open and Close claw
+    Toggle toggleLB2 = new Toggle(()->gamepad2.left_bumper); // set wrist for ascent
     Toggle toggleDPL2 = new Toggle(()->gamepad2.dpad_left); // Hang Specimen Preset
     Toggle toggleDPD2 = new Toggle(()-> gamepad2.dpad_down);    // Collect Specimen from wall preset
     Toggle toggleDPU2 = new Toggle(()-> gamepad2.dpad_up);  // High Basket preset
@@ -78,6 +79,7 @@ public class DeepTeleop extends XDriveTele {
             boolean dpr2Toggled = toggleDPR2.update();
             boolean dpu1Toggled = toggleDPU1.update();
             boolean dpd1Toggled = toggleDPD1.update();
+            boolean lb2Toggled = toggleLB2.update();
 
             double currentArmLength = bot.getSlideInches();
             double currentArmAngle = bot.getArmAngle();
@@ -88,9 +90,9 @@ public class DeepTeleop extends XDriveTele {
             if (dpu2Toggled && !resettingArm) {
                 bot.setTargetArmAngleSafe(72);
             } else if (dpl2Toggled && !resettingArm) {
-                bot.setTargetArmAngleSafe(34);
+                bot.setTargetArmAngleSafe(35.5);  // was 34
             } else if (dpd2Toggled && !resettingArm) {
-                bot.setTargetArmAngleSafe(20);
+                bot.setTargetArmAngleSafe(-10);  // was 20
             } else if (dpr2Toggled){
                 bot.setTargetArmAngleSafe(-16);
             }else if (!resettingArm) {
@@ -105,9 +107,9 @@ public class DeepTeleop extends XDriveTele {
             if (dpu2Toggled && !resettingArm) {
                 bot.setTargetSlideLengthSafe(42);
             } else if (dpl2Toggled && !resettingArm) {
-                bot.setTargetSlideLengthSafe(22);
+                bot.setTargetSlideLengthSafe(20.2);  // was 22
             } else if (dpd2Toggled && !resettingArm) {
-                bot.setTargetSlideLengthSafe(20);
+                bot.setTargetSlideLengthSafe(20.5);  // was 20
             } else if (dpr2Toggled){
                 bot.setTargetSlideLengthSafe(22);
             } else if (!resettingArm) {
@@ -165,6 +167,7 @@ public class DeepTeleop extends XDriveTele {
                         yawState = YawState.MID;
                         } else if (rightStickX1 < -0.05 || rightStickX1 > 0.05){
                         yawState = YawState.CUSTOM;
+
                     }
                     break;
                 case MID:
@@ -203,7 +206,9 @@ public class DeepTeleop extends XDriveTele {
             // handle wrist
 
             double wristChange = gamepad2.left_trigger - gamepad2.right_trigger;
-            if (dpu2Toggled && !resettingArm){
+            if (lb2Toggled && !resettingArm){
+                targetWristAngle = DeepBot.MIN_ARM_DEGREES + 165;
+            } else if (dpu2Toggled && !resettingArm){
                 targetWristAngle = DEFAULT_WRIST_ANGLE;
             } else if (dpl2Toggled && !resettingArm){
                 targetWristAngle = DEFAULT_WRIST_ANGLE + 90;

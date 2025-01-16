@@ -2,11 +2,13 @@ package org.firstinspires.ftc.teamcode.deepbot.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
 import org.firstinspires.ftc.teamcode.deepbot.DeepBotAuto;
+import org.firstinspires.ftc.teamcode.util.Pose;
 
 @Autonomous
-public class HighSpecimenSonic extends DeepBotAuto {
+public class HighSpecimen2b extends DeepBotAuto {
 
     DeepBot bot = new DeepBot();
     boolean stopEarly = true;
@@ -39,44 +41,38 @@ public class HighSpecimenSonic extends DeepBotAuto {
         driveTo(fast, bot.getPose().x, 30, 90, 1);
         driveTo(fast, 34, 30, 90, 1);
         driveTo(fast, 34, 60, 90, 1);
-        driveTo(fast, 48, 60, 90, 1);
+        driveTo(fast, 47.5, 60, 90, 1);
         turnTo(-90, 90, 8, 2);
+        double x = 64.8 - bot.sonicLeft.getDistanceSync(25, DistanceUnit.INCH);
+        if (Math.abs(x - bot.getPose().x) < 5){
+            bot.setPose(x, bot.getPose().y, Math.toDegrees(bot.getPose().h));
+            driveTo(slow, 47.5, 60, -90, 0.5);
+        }
 
 //        TODO: use left distance sensor to adjust x and adjust bot position
-        sleep(100);
-        double x = getXFromSonic();
-        telemetry.addData("Sonic X", x);
-        bot.setPose(x, bot.getPose().y, Math.toDegrees(bot.getPose().h));
-        driveTo(normalSpeed, 48, 60, -90, .5);
-        telemetry.addData("Adjusted X", bot.getPose().x);
-        telemetry.update();
 
 
         // push sample into alliance wall and reset pose
 
         bot.setArmDegrees(30);
-        driveTo(fast, 48, 9, -90, 1);
-        driveTo(slow, 48 , 4, -90, 1);
+        driveTo(fast, 47.5, 9, -90, 1);
+        driveTo(slow, 47.5 , 1, -90, 1);
         bot.setPose(bot.getPose().x, 7.5, -90);
 
         // backup, set arm position, pickup specimen from wall
 
-        driveTo(normalSpeed, 48, 26, -90, 1);
+        driveTo(normalSpeed, 47.5, 26, -90, 1);
         setArmForWallPickup();
-        driveTo(normalSpeed, 48, 18, -90, .5);
+        driveTo(normalSpeed, 47.5, 18, -90, .5);
         bot.closeClaw();
         sleep(400);
         setArmForSpecimenHang2();
 
-        sleep(100);
-        x = getXFromSonic();
-        bot.setPose(x, bot.getPose().y, Math.toDegrees(bot.getPose().h));
-
         // hangs second specimen
 
-        driveTo(fast, 3, 24,-90,1);
+        driveTo(fast, 6, 21,-90,1);
         turnTo(90, 90, 8, 2);
-        driveTo(normalSpeed, 3, 43, 90, 0.5);
+        driveTo(normalSpeed, 6, 43, 90, 0.5);
         bot.openClaw();
         sleep(300);
         bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH);
@@ -85,7 +81,7 @@ public class HighSpecimenSonic extends DeepBotAuto {
 
         driveTo(fast, 12, 16, 90, 1);
         bot.setArmDegrees(DeepBot.MIN_ARM_DEGREES);
-        driveTo(fast, 48, 16, 90, 1);
+        driveTo(fast, 60, 16, 90, 1);
 
 
 

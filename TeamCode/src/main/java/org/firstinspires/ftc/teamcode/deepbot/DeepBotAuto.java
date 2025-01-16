@@ -207,10 +207,10 @@ public abstract class DeepBotAuto extends XDriveAuto {
         }
         public void run(){
             double dist = bot.sonicLeft.getDistanceAsync(25, DistanceUnit.INCH);
-            if (dist<0){
+            if (dist<0 || bot.getPose().y < 16){
                 return;
             }
-            double xMeas = 64.0 - dist;
+            double xMeas = 64.8 - dist;
             if (Math.abs(xMeas - bot.getPose().x) > 4){
                 return;
             }

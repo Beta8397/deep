@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.util.SavedData;
 
 @Autonomous
 
-public class LeftAutoPlusRed extends DeepBotAuto {
+public class HighBucket2 extends DeepBotAuto {
 
     DeepBot bot = new DeepBot();
 

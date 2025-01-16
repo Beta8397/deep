@@ -9,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.Predicate;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.MagneticFlux;
+import org.firstinspires.ftc.teamcode.deepbot.DeepBotAuto;
 import org.firstinspires.ftc.teamcode.util.MotionProfile;
 import org.firstinspires.ftc.teamcode.util.Pose;
 import org.firstinspires.ftc.teamcode.util.QuinticSpline2D;
@@ -23,6 +24,7 @@ public abstract class XDriveAuto extends LinearOpMode {
     protected MotionProfile slow = new MotionProfile(10, 20, 10);
     protected MotionProfile medium = new MotionProfile(15, 30, 15);
     protected MotionProfile fast = new MotionProfile(25, 60, 25);
+    protected MotionProfile superFast = new MotionProfile(30, 60, 30);
 
     public void setBot(XDrive bot){
         this.bot = bot;
@@ -83,6 +85,40 @@ public abstract class XDriveAuto extends LinearOpMode {
         while (opModeIsActive()){
             bot.updateOdometry();
             Pose pose = bot.getPose();
+
+            if (Math.sqrt( (p1.x-pose.x)*(p1.x-pose.x) + (p1.y-pose.y)*(p1.y-pose.y)) < tolerance){
+                break;
+            }
+
+            VectorF vPose0 = new VectorF((float)(pose.x-p0.x), (float)(pose.y-p0.y));
+            float d0 = vPose0.dotProduct(lineDir);  // how far we've gone
+            VectorF vPose1 = new VectorF((float)(p1.x-pose.x), (float)(p1.y-pose.y));
+            float d1 = vPose1.dotProduct(lineDir);  // how far we have to go
+            float err = lineDir.get(0)*vPose0.get(1) - lineDir.get(1)*vPose0.get(0); // distance from pose to line
+            VectorF vErr = new VectorF(-err*lineDir.get(1), err*lineDir.get(0));    // Linear error vector
+            float speed0 = (float)Math.sqrt(mProf.vMin*mProf.vMin + 2.0*Math.abs(d0)*mProf.accel);
+            float speed1 = (float)Math.sqrt(mProf.vMin*mProf.vMin + 2.0*Math.abs(d1)*mProf.accel);
+            float speed = (float)Math.min(mProf.vMax, Math.min(speed0, speed1));
+            VectorF baseVel = lineDir.multiplied(speed*Math.signum(d1));
+            VectorF corrVel = vErr.multiplied(-0.2f * speed);
+            VectorF velRobot = fieldToBot(baseVel.added(corrVel), pose.h);
+            double va = 4.0 * AngleUnit.normalizeRadians(p1.h-pose.h);
+            bot.setDriveSpeed(velRobot.get(0), velRobot.get(1), va);
+        }
+        bot.setDriveSpeed(0,0,0);
+        bot.updateOdometry();
+    }
+
+    public void driveLine(MotionProfile mProf, Pose p0, Pose p1, double tolerance,
+                          Runnable runnable){
+        VectorF lineDir = new VectorF((float)(p1.x-p0.x), (float)(p1.y-p0.y));
+        float totalDist = lineDir.magnitude();
+        lineDir = lineDir.multiplied(1.0f/totalDist);
+
+        while (opModeIsActive()){
+            bot.updateOdometry();
+            Pose pose = bot.getPose();
+            runnable.run();
 
             if (Math.sqrt( (p1.x-pose.x)*(p1.x-pose.x) + (p1.y-pose.y)*(p1.y-pose.y)) < tolerance){
                 break;
