@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
 import org.firstinspires.ftc.teamcode.deepbot.DeepBotAuto;
+import org.firstinspires.ftc.teamcode.util.Pose;
 import org.firstinspires.ftc.teamcode.util.SavedData;
 
 @Autonomous
@@ -21,53 +22,74 @@ public class LeftAutoPlusRed extends DeepBotAuto {
 
         bot.setPose(-31, 8, 180);
 
-        bot.setArmDegrees(70);
+        bot.setArmDegrees(67);
 
-        driveTo(normalSpeed, -31, 18, 180, 1);
-        driveTo(normalSpeed, -48, 18, 180, 1);
+        driveTo(normalSpeed, -31, 16, 180, 1);
+        driveTo(normalSpeed, -54, 16, 180, 1);
+        bot.setWristPosition(0.764);
         turnTo(-135, 90, 8, 2);
 
-        waitForMotor(()->!bot.armMotor.isBusy());
+        bot.armMotor.getCurrentPosition();
+        while (opModeIsActive() && armBusy()) continue;
+        bot.slideMotor.getCurrentPosition();
         bot.setSlideInches(44);
-        waitForMotor(()-> !bot.slideMotor.isBusy());
+        while (opModeIsActive() && slideBusy()) continue;
 
         dropSampleInBucket();
 
+        bot.slideMotor.getCurrentPosition();
         bot.setSlideInches(16);
         waitForMotor(()-> bot.getSlideInches() < 24);
 
-        bot.setArmDegrees(DeepBot.MIN_ARM_DEGREES);
-        bot.setWristPosition(0.465);
 
         turnTo(90, 90, 8,2);
-        waitForMotor(()->!bot.armMotor.isBusy());
-        waitForMotor(()->!bot.slideMotor.isBusy());
+
+        bot.setArmDegrees(-36);
+        bot.setWristPosition(0.764);
+        bot.slideMotor.getCurrentPosition();
+        bot.armMotor.getCurrentPosition();
+        while (opModeIsActive()){
+            if (!armBusy() && !slideBusy()) break;
+        }
 
         double lDist = getAvgLeftDistance(5);
         double x = bot.getPose().x;
-        double targetX = x + 12.8  - lDist;
+        double targetX = x + 17 - lDist;
 
-        driveTo(normalSpeed, targetX, 34, 90, 1);
+        driveTo(normalSpeed, targetX, bot.getPose().y, 90, 0.5);
+        Pose pose1 = new Pose(targetX, bot.getPose().y, bot.getPose().h);
+        Pose pose2 = new Pose(targetX, 31, Math.toRadians(90));
+        driveLine(normalSpeed, pose1, pose2, 0.5);
+
+//        driveTo(normalSpeed, targetX, 31, 90, 0.5);
+
         bot.setClawPosition(DeepBot.CLAW_CLOSED);
         sleep(400);
 
-        bot.setArmDegrees(70);
+        bot.setArmDegrees(67);
 
-        driveTo(medium, -51, 19, 90, 1);
+        driveTo(medium, -54, 18, 90, 1);
         turnTo(-135,90,8, 2);
 
-        waitForMotor(()->!bot.armMotor.isBusy());
+
+        bot.armMotor.getCurrentPosition();
+        while (opModeIsActive() && armBusy() ) continue;
+
         bot.setSlideInches(44);
-        waitForMotor(()->!bot.slideMotor.isBusy());
+        bot.slideMotor.getCurrentPosition();
+        while (opModeIsActive() && slideBusy()) continue;
         dropSampleInBucket();
 
-
-        bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH);
+        bot.setSlideInches(20);
+        bot.slideMotor.getCurrentPosition();
         waitForMotor(()->bot.getSlideInches() < 24);
-        bot.setArmDegrees(DeepBot.MIN_ARM_DEGREES);
+        bot.setArmDegrees(36);
 
-        turnTo(-180, 90, 8, 2);
-        driveTo(fast, 42, 13, 180, 1);
+        turnTo(0, 90, 8, 2);
+        driveTo(fast, -36, 57, 0, 1);
+        driveTo(normalSpeed, -18, 57, 0, 1);
+
+        bot.armMotor.setPower(0);
 
         while(opModeIsActive()){
             telemetry.addData("POS", "x = %.1f  y = %.1f  h = %.1f",

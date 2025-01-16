@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.deepbot.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
 import org.firstinspires.ftc.teamcode.util.SavedData;
@@ -60,6 +62,11 @@ public class DeepTeleop extends XDriveTele {
             if (toggleA2.update()) {
                 resettingArm = true;
             } else if (resettingArm && !gamepad2.a) {
+                bot.slideMotor.getCurrentPosition();
+                bot.slideMotor.setTargetPosition(bot.slideMotor.getCurrentPosition()+40);
+                bot.slideMotor.setPower(1);
+                ElapsedTime et = new ElapsedTime();
+                while (bot.slideMotor.isBusy() && et.milliseconds() < 1000) continue;
                 resettingArm = false;
                 bot.resetArm();
             }
@@ -117,6 +124,10 @@ public class DeepTeleop extends XDriveTele {
             telemetry.addData("slideinches", currentArmLength);
             telemetry.addData("LeftDist", bot.getLeftDistance());
 
+
+            telemetry.addData("arm current", bot.armMotor.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("slide current",bot.slideMotor.getCurrent(CurrentUnit.AMPS));
+
             // handle claw
 
             boolean rb2Toggled = toggleRB2.update();
@@ -134,6 +145,9 @@ public class DeepTeleop extends XDriveTele {
                     bot.closeClaw();
                 }
             }
+
+            telemetry.addData("claw pos", bot.clawServo.getPosition());
+
 
             // handle yaw
 
@@ -214,6 +228,8 @@ public class DeepTeleop extends XDriveTele {
                 wristPos = 0;
             }
             bot.setWristPosition(wristPos);
+
+            telemetry.addData("wrist pos", bot.wristServo.getPosition());
 
             // handle winch
 

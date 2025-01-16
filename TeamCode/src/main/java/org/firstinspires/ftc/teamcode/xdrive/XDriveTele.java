@@ -15,6 +15,7 @@ public class XDriveTele extends LinearOpMode {
     private Toggle toggleX1 = new Toggle(()-> gamepad1.x);
     boolean slowMode = true;
     double speedDivider = 4;
+    double turnDivider = 4;
     boolean fieldcentric = true;
 
     public void setBot(XDrive bot){
@@ -44,8 +45,10 @@ public class XDriveTele extends LinearOpMode {
             slowMode = !slowMode;
             if (slowMode){
                 speedDivider = 4;
+                turnDivider = 4;
             }else {
                 speedDivider = 1.75;
+                turnDivider = 3;
             }
         }
         if (toggleB1.update()){
@@ -63,7 +66,7 @@ public class XDriveTele extends LinearOpMode {
         double gpy = -gamepad1.left_stick_y;
         double gpa = gamepad1.left_trigger - gamepad1.right_trigger;
         double pxr, pyr, pa;
-        pa = gpa/speedDivider;
+        pa = gpa/turnDivider;
         if (fieldcentric){
             double px = gpx/speedDivider;
             double py = gpy/speedDivider;

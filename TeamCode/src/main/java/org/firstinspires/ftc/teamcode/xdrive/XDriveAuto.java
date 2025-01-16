@@ -98,7 +98,7 @@ public abstract class XDriveAuto extends LinearOpMode {
             float speed1 = (float)Math.sqrt(mProf.vMin*mProf.vMin + 2.0*Math.abs(d1)*mProf.accel);
             float speed = (float)Math.min(mProf.vMax, Math.min(speed0, speed1));
             VectorF baseVel = lineDir.multiplied(speed*Math.signum(d1));
-            VectorF corrVel = vErr.multiplied(-4.0f);
+            VectorF corrVel = vErr.multiplied(-0.2f * speed);
             VectorF velRobot = fieldToBot(baseVel.added(corrVel), pose.h);
             double va = 4.0 * AngleUnit.normalizeRadians(p1.h-pose.h);
             bot.setDriveSpeed(velRobot.get(0), velRobot.get(1), va);

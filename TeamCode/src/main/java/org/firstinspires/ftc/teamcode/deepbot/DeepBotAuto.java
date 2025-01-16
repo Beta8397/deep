@@ -138,11 +138,11 @@ public abstract class DeepBotAuto extends XDriveAuto {
     }
 
     public void dropSampleInBucket(){
-        bot.setWristPosition(0.8);
-        sleep(600);
+//        bot.setWristPosition(0.9);
+//        sleep(800);
         bot.setClawPosition(DeepBot.CLAW_OPEN);
         sleep(500);
-        bot.setWristPosition(0.2);
+        bot.setWristPosition(0.25);
         sleep(300);
     }
 
