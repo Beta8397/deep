@@ -24,8 +24,8 @@ public class HighBucket2 extends DeepBotAuto {
 
         bot.setArmDegrees(67);
 
-        driveTo(normalSpeed, -31, 16, 180, 1);
-        driveTo(normalSpeed, -54, 16, 180, 1);
+        driveTo(normalSpeed, -31, 16.7, 180, 1);
+        driveTo(normalSpeed, -53.3, 16.7, 180, 1);
         bot.setWristPosition(0.764);
         turnTo(-135, 90, 8, 2);
 
@@ -45,7 +45,7 @@ public class HighBucket2 extends DeepBotAuto {
         turnTo(90, 90, 8,2);
 
         bot.setArmDegrees(-36);
-        bot.setWristPosition(0.764);
+        bot.setWristPosition(0.7); // was 0.764
         bot.slideMotor.getCurrentPosition();
         bot.armMotor.getCurrentPosition();
         while (opModeIsActive()){
@@ -54,7 +54,7 @@ public class HighBucket2 extends DeepBotAuto {
 
         double lDist = getAvgLeftDistance(5);
         double x = bot.getPose().x;
-        double targetX = x + 17 - lDist;
+        double targetX = x + 16.5 - lDist;
 
         driveTo(normalSpeed, targetX, bot.getPose().y, 90, 0.5);
         Pose pose1 = new Pose(targetX, bot.getPose().y, bot.getPose().h);
@@ -63,6 +63,8 @@ public class HighBucket2 extends DeepBotAuto {
 
 //        driveTo(normalSpeed, targetX, 31, 90, 0.5);
 
+        bot.setWristPosition(0.764);
+        sleep(600);
         bot.setClawPosition(DeepBot.CLAW_CLOSED);
         sleep(400);
 

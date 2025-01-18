@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.teamcode.i2c.BNO055EnhImpl;
 import org.firstinspires.ftc.teamcode.util.Toggle;
 
 @TeleOp
+@Disabled
 public class TestBNO055Enh extends LinearOpMode {
 
     BNO055EnhImpl imu;

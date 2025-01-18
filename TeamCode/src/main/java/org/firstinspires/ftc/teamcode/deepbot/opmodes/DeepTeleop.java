@@ -90,9 +90,9 @@ public class DeepTeleop extends XDriveTele {
             if (dpu2Toggled && !resettingArm) {
                 bot.setTargetArmAngleSafe(72);
             } else if (dpl2Toggled && !resettingArm) {
-                bot.setTargetArmAngleSafe(35.5);  // was 34
+                bot.setTargetArmAngleSafe(37.1);  // was 34
             } else if (dpd2Toggled && !resettingArm) {
-                bot.setTargetArmAngleSafe(-10);  // was 20
+                bot.setTargetArmAngleSafe(-10.5);  // was 20
             } else if (dpr2Toggled){
                 bot.setTargetArmAngleSafe(-16);
             }else if (!resettingArm) {
@@ -219,7 +219,7 @@ public class DeepTeleop extends XDriveTele {
             } else if (gamepad2.x){
                 targetWristAngle = DEFAULT_WRIST_ANGLE;
             } else if (gamepad2.y){
-                targetWristAngle = DEFAULT_WRIST_ANGLE + 90;
+                targetWristAngle = DEFAULT_WRIST_ANGLE + 70;
             } else {
                 targetWristAngle += wristChange;
             }

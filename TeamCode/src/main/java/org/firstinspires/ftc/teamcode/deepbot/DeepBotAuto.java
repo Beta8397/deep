@@ -180,7 +180,7 @@ public abstract class DeepBotAuto extends XDriveAuto {
 
     public void setArmForWallPickup(){
         bot.setSlideInches(20);
-        bot.setArmDegrees(-16.5);
+        bot.setArmDegrees(-17); // Was -16.5
         bot.setWristPosition(0.5);
         bot.openClaw();
     }
@@ -192,7 +192,7 @@ public abstract class DeepBotAuto extends XDriveAuto {
     }
 
     public void setArmForSpecimenHang2(){
-        bot.setArmDegrees(23.5);
+        bot.setArmDegrees(24);  // was 23.5
         bot.setSlideInches(21);
         bot.setWristPosition(0.5);
     }
