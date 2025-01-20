@@ -242,7 +242,7 @@ public class DeepTeleop extends XDriveTele {
                 case OFF:
                     if (dpu1Toggled){
                         winchState = WinchState.RAISING;
-                        bot.winchMotor.setTargetPosition(23300);
+                        bot.winchMotor.setTargetPosition(25300);
                         bot.winchMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         bot.winchMotor.setPower(1);
                     } else if (dpd1Toggled){
