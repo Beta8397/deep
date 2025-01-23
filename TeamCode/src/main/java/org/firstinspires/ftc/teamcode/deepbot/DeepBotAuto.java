@@ -71,25 +71,6 @@ public abstract class DeepBotAuto extends XDriveAuto {
         return sum/num;
     }
 
-    public void deliverSpecimen(){
-        bot.setArmDegrees(30);
-        sleep(5000);
-        bot.setWristPosition(0.35);
-        sleep(500);
-        bot.setSlideInches(30);
-        sleep(3000);
-        bot.setArmDegrees(15);
-        sleep(3000);
-        bot.setSlideInches(33);
-        sleep(1000);
-        bot.setClawPosition(DeepBot.CLAW_OPEN);
-        sleep(500);
-        bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH);
-        sleep(3000);
-        bot.setArmDegrees(DeepBot.MIN_ARM_DEGREES);
-        sleep(3000);
-    }
-
     public void deliverSampleHighBucket(){
 
         ElapsedTime et = new ElapsedTime();
@@ -196,6 +177,20 @@ public abstract class DeepBotAuto extends XDriveAuto {
         bot.setSlideInches(21);
         bot.setWristPosition(0.5);
     }
+
+    public void deliverSpecimen(){
+        bot.setArmDegrees(25);
+        while (opModeIsActive() && armBusy() ) continue;
+        bot.setSlideInches(16);
+    }
+
+
+    public void setArmForSpecimenHang3(){
+        bot.setArmDegrees(55);
+        bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH + 0.25);
+        bot.setWristPosition(0.7);
+    }
+
 
     public double getXFromSonic(){
         return 64.0 - bot.sonicLeft.getDistanceAsync(25, DistanceUnit.INCH);
