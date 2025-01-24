@@ -109,6 +109,39 @@ public abstract class XDriveAuto extends LinearOpMode {
         bot.updateOdometry();
     }
 
+
+    public void driveLine(MotionProfile mProf, VectorF p0, VectorF p1, double targetHeadingDegrees, double tolerance){
+        VectorF lineDir = p1.subtracted(p0);
+        float totalDist = lineDir.magnitude();
+        lineDir = lineDir.multiplied(1.0f/totalDist);
+
+        while (opModeIsActive()){
+            bot.updateOdometry();
+            Pose pose = bot.getPose();
+
+            if (Math.sqrt( (p1.get(0)-pose.x)*(p1.get(0)-pose.x) + (p1.get(1)-pose.y)*(p1.get(1)-pose.y)) < tolerance){
+                break;
+            }
+
+            VectorF vPose0 = new VectorF((float)(pose.x-p0.get(0)), (float)(pose.y-p0.get(1)));
+            float d0 = vPose0.dotProduct(lineDir);  // how far we've gone
+            VectorF vPose1 = new VectorF((float)(p1.get(0)-pose.x), (float)(p1.get(1)-pose.y));
+            float d1 = vPose1.dotProduct(lineDir);  // how far we have to go
+            float err = lineDir.get(0)*vPose0.get(1) - lineDir.get(1)*vPose0.get(0); // distance from pose to line
+            VectorF vErr = new VectorF(-err*lineDir.get(1), err*lineDir.get(0));    // Linear error vector
+            float speed0 = (float)Math.sqrt(mProf.vMin*mProf.vMin + 2.0*Math.abs(d0)*mProf.accel);
+            float speed1 = (float)Math.sqrt(mProf.vMin*mProf.vMin + 2.0*Math.abs(d1)*mProf.accel);
+            float speed = (float)Math.min(mProf.vMax, Math.min(speed0, speed1));
+            VectorF baseVel = lineDir.multiplied(speed*Math.signum(d1));
+            VectorF corrVel = vErr.multiplied(-0.2f * speed);
+            VectorF velRobot = fieldToBot(baseVel.added(corrVel), pose.h);
+            double va = 4.0 * AngleUnit.normalizeRadians(Math.toRadians(targetHeadingDegrees)-pose.h);
+            bot.setDriveSpeed(velRobot.get(0), velRobot.get(1), va);
+        }
+        bot.setDriveSpeed(0,0,0);
+        bot.updateOdometry();
+    }
+
     public void driveLine(MotionProfile mProf, Pose p0, Pose p1, double tolerance,
                           Runnable runnable){
         VectorF lineDir = new VectorF((float)(p1.x-p0.x), (float)(p1.y-p0.y));
