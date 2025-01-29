@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.deepbot.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
@@ -19,15 +20,15 @@ public class HighSpecimen2d extends DeepBotAuto {
 
         autoWaitForStart();
 
-        bot.setPose(0, 7.5, 90);
+        bot.setPose(-4, 7.5, 90);
 
         // Set arm and deposit first specimen
 
         setArmForSpecimenHang3();
 
-        driveTo(fast, 0,12, 90, 1);
+        driveTo(fast, -4,12, 90, 1);
         while(opModeIsActive() && armBusy()) continue;
-        driveTo(fast, 0, 44, 90,0.5);
+        driveTo(fast, -4, 44, 90,0.5);
 
 
         deliverSpecimen();
@@ -42,6 +43,10 @@ public class HighSpecimen2d extends DeepBotAuto {
 
         bot.setPose(bot.getPose().x, 41, 90);
         driveTo(fast, bot.getPose().x, 30, 90, 1);
+
+        bot.setArmDegrees(45);
+        while (opModeIsActive() && armBusy()) continue;
+
         driveTo(fast, 48, 30, 90, 1);
 //        driveTo(fast, 32, 60, 90, 1);
 //        driveTo(normalSpeed, 47.5, 60, 90, 1);
@@ -57,7 +62,6 @@ public class HighSpecimen2d extends DeepBotAuto {
 
         // drive into alliance wall and reset pose
 
-        bot.setArmDegrees(30);
         driveTo(normalSpeed, 48.5, 3, -90, 1);
         bot.setPose(bot.getPose().x, 7.5, -90);
 
@@ -65,17 +69,19 @@ public class HighSpecimen2d extends DeepBotAuto {
 
         driveTo(normalSpeed, 48.5, 26, -90, 1);
         setArmForWallPickup();
-        sleep(500);
+        ElapsedTime et = new ElapsedTime();
+        while (opModeIsActive() && (armBusy() || slideBusy() || et.milliseconds()< 500)) continue;
+
         driveTo(normalSpeed, 48.5, 19, -90, .5);
         bot.closeClaw();
-        sleep(700);
+        sleep(1000);
         setArmForSpecimenHang3();
 
         // hangs second specimen
 
-        driveTo(fast, 6, 21,-90,1);
+        driveTo(fast, 2, 21,-90,1);
         turnTo(90, 120, 12, 2);
-        driveTo(fast, 6, 43, 90, 0.5);
+        driveTo(fast, 2, 43, 90, 0.5);
         deliverSpecimen();
         bot.openClaw();
         bot.setPose(bot.getPose().x, 41, Math.toDegrees(bot.getPose().h));
