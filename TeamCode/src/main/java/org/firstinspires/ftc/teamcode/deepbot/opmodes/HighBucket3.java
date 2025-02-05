@@ -64,7 +64,7 @@ public class HighBucket3 extends DeepBotAuto {
 
         driveTo(fast, targetX, bot.getPose().y, 90, 0.5);
         Pose pose1 = new Pose(targetX, bot.getPose().y, bot.getPose().h);
-        Pose pose2 = new Pose(targetX, 28.5, Math.toRadians(90));
+        Pose pose2 = new Pose(targetX, 30, Math.toRadians(90));
         driveLine(normalSpeed, pose1, pose2, 0.5);
 
 //        driveTo(normalSpeed, targetX, 31, 90, 0.5);
@@ -111,9 +111,9 @@ public class HighBucket3 extends DeepBotAuto {
 
         targetX = x + 6.5 - lDist;
 
-        driveTo(fast, targetX, bot.getPose().y, 90, 0.5);
+        driveTo(normalSpeed, targetX, bot.getPose().y, 90, 0.5);
         pose1 = new Pose(targetX, bot.getPose().y, bot.getPose().h);
-        pose2 = new Pose(targetX, 28.5, Math.toRadians(90));
+        pose2 = new Pose(targetX, 30, Math.toRadians(90));
         driveLine(normalSpeed, pose1, pose2, 0.5);
 
         bot.setWristPosition(0.764);
@@ -123,7 +123,7 @@ public class HighBucket3 extends DeepBotAuto {
 
         bot.setArmDegrees(67);
 
-        driveTo(fast, -55, 17, 90, 1);
+        driveTo(fast, -56, 18, 90, 1);
         if (bot.getArmAngle()>45){
             bot.setSlideInches(44);
         }

@@ -47,6 +47,7 @@ public class DeepBot extends XDrive {
     private double targetArmAngle = MIN_ARM_DEGREES;
 
     public static final double CLAW_OPEN = 0.16;
+    public static final double CLAW_WIDE_OPEN = 0.3;
     public static final double CLAW_CLOSED = 0;
     public static final double YAW_STRAIGHT = 0.4;
     public static final double YAW_LEFT = 0.77;

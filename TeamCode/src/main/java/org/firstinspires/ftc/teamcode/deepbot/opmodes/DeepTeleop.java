@@ -28,6 +28,8 @@ public class DeepTeleop extends XDriveTele {
 
     boolean resettingArm = false;
 
+    boolean loweringArm = false;
+
     boolean clawOpen = true;
     enum  YawState{LEFT, MID, RIGHT, CUSTOM};
     YawState yawState = YawState.MID;
@@ -86,36 +88,47 @@ public class DeepTeleop extends XDriveTele {
             double targetArmLength = bot.getTargetSlideLength();
             double targetArmAngle = bot.getTargetArmAngle();
 
+            boolean justStoppedLoweringArm = false;
+
+            if (!resettingArm && dpr2Toggled){
+                loweringArm = true;
+            } else if (loweringArm && !gamepad2.dpad_right){
+                loweringArm = false;
+                justStoppedLoweringArm = true;
+            }
+
             // arm angle
-            if (dpu2Toggled && !resettingArm) {
-                bot.setTargetArmAngleSafe(72);
-            } else if (dpl2Toggled && !resettingArm) {
-                bot.setTargetArmAngleSafe(37.1);  // was 34
-            } else if (dpd2Toggled && !resettingArm) {
-                bot.setTargetArmAngleSafe(-10.5);  // was 20
-            } else if (dpr2Toggled){
-                bot.setTargetArmAngleSafe(-16);
-            }else if (!resettingArm) {
-               bot.setTargetArmAngleSafe(targetArmAngle + gamepad2.left_stick_y * 3.0);
-            } else {
+            if (resettingArm){
                 bot.setTargetArmAngleUnSafe(targetArmAngle + gamepad2.left_stick_y * 3.0);
+            } else if (dpu2Toggled) {
+                bot.setTargetArmAngleSafe(67);
+            } else if (dpl2Toggled) {
+                bot.setTargetArmAngleSafe(37.1);  // was 34
+            } else if (dpd2Toggled) {
+                bot.setTargetArmAngleSafe(-13.5);  // was 20
+            } else if (loweringArm){
+                if (currentArmLength < 24) {
+                    bot.setTargetArmAngleSafe(-26);
+                }
+            } else {
+               bot.setTargetArmAngleSafe(targetArmAngle + gamepad2.left_stick_y * 3.0);
             }
 
 
            // slide length
             //
-            if (dpu2Toggled && !resettingArm) {
-                bot.setTargetSlideLengthSafe(42);
-            } else if (dpl2Toggled && !resettingArm) {
-                bot.setTargetSlideLengthSafe(20.2);  // was 22
-            } else if (dpd2Toggled && !resettingArm) {
-                bot.setTargetSlideLengthSafe(20.5);  // was 20
-            } else if (dpr2Toggled){
-                bot.setTargetSlideLengthSafe(22);
-            } else if (!resettingArm) {
-                bot.setTargetSlideLengthSafe(targetArmLength - gamepad2.right_stick_y * 0.8);
-            } else {
+            if (resettingArm){
                 bot.setTargetSlideLengthUnSafe(targetArmLength - gamepad2.right_stick_y * 0.8);
+            } else if (dpu2Toggled) {
+                bot.setTargetSlideLengthSafe(42);
+            } else if (dpl2Toggled) {
+                bot.setTargetSlideLengthSafe(20.2);  // was 22
+            } else if (dpd2Toggled) {
+                bot.setTargetSlideLengthSafe(20.5);  // was 20
+            } else if (loweringArm){
+                bot.setTargetSlideLengthSafe(22);
+            } else {
+                bot.setTargetSlideLengthSafe(targetArmLength - gamepad2.right_stick_y * 0.8);
             }
 
             bot.updateArm();
@@ -133,9 +146,12 @@ public class DeepTeleop extends XDriveTele {
             // handle claw
 
             boolean rb2Toggled = toggleRB2.update();
-            if ((dpr2Toggled || dpd2Toggled) && !resettingArm){
+            if (dpd2Toggled && !resettingArm) {
                 clawOpen = true;
                 bot.openClaw();
+            } else if (loweringArm && !resettingArm){
+                clawOpen = true;
+                bot.setClawPosition(DeepBot.CLAW_WIDE_OPEN);
             }else if (dpl2Toggled && !resettingArm){
                 clawOpen = false;
                 bot.closeClaw();
@@ -214,7 +230,9 @@ public class DeepTeleop extends XDriveTele {
                 targetWristAngle = DEFAULT_WRIST_ANGLE + 90;
             } else if (dpd2Toggled && !resettingArm){
                 targetWristAngle = DEFAULT_WRIST_ANGLE +90;
-            }else if (dpr2Toggled && !resettingArm){
+            }else if (loweringArm && !resettingArm) {
+                targetWristAngle = DEFAULT_WRIST_ANGLE + 90;
+            } else if (justStoppedLoweringArm && !resettingArm){
                 targetWristAngle = DEFAULT_WRIST_ANGLE;
             } else if (gamepad2.x){
                 targetWristAngle = DEFAULT_WRIST_ANGLE;
