@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.ftccommon.internal.manualcontrol.ManualControlOpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
@@ -25,6 +26,7 @@ public class DeepTeleop extends XDriveTele {
     Toggle toggleDPD1 = new Toggle(()-> gamepad1.dpad_down);    // handle winch state
     Toggle toggleLB1 = new Toggle(()-> gamepad1.left_bumper);   // Handle Yaw state
     Toggle toggleRB1 = new Toggle(()-> gamepad1.right_bumper);  // Handle yaw state
+    Toggle toggleRightStick1 = new Toggle(()->Math.abs(gamepad1.right_stick_y) > 0.5);
 
     boolean resettingArm = false;
 
@@ -40,7 +42,7 @@ public class DeepTeleop extends XDriveTele {
     private static final double DEFAULT_WRIST_ANGLE = 0;
     private double targetWristAngle = DEFAULT_WRIST_ANGLE + 90;
 
-    enum WinchState{OFF, RAISING, LOWERING}
+    enum WinchState{OFF, RAISING, LOWERING, MANUAL}
 
     WinchState winchState = WinchState.OFF;
 
@@ -82,6 +84,7 @@ public class DeepTeleop extends XDriveTele {
             boolean dpu1Toggled = toggleDPU1.update();
             boolean dpd1Toggled = toggleDPD1.update();
             boolean lb2Toggled = toggleLB2.update();
+            boolean rightStick1Toggled = toggleRightStick1.update();
 
             double currentArmLength = bot.getSlideInches();
             double currentArmAngle = bot.getArmAngle();
@@ -260,23 +263,33 @@ public class DeepTeleop extends XDriveTele {
                 case OFF:
                     if (dpu1Toggled){
                         winchState = WinchState.RAISING;
-                        bot.winchMotor.setTargetPosition(25300);
+                        bot.winchMotor.setTargetPosition(5550);
                         bot.winchMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         bot.winchMotor.setPower(1);
                     } else if (dpd1Toggled){
                         winchState = WinchState.LOWERING;
+                        bot.winchMotor.setTargetPosition(0);
+                        bot.winchMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        bot.winchMotor.setPower(1);
+                    } else if (rightStick1Toggled) {
+                        winchState = WinchState.MANUAL;
                         bot.winchMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                        bot.winchMotor.setPower(-1);
+                        bot.winchMotor.setPower(-Math.signum(gamepad1.right_stick_y));
                     }
                     break;
                 case RAISING:
                 case LOWERING:
+                case MANUAL:
                     if (dpu1Toggled || dpd1Toggled){
                         winchState = WinchState.OFF;
                         bot.winchMotor.setTargetPosition(bot.winchMotor.getCurrentPosition());
                         bot.winchMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         bot.winchMotor.setPower(1);
                     }
+            }
+
+            if (winchState == WinchState.MANUAL){
+                bot.winchMotor.setPower(-Math.signum(gamepad1.right_stick_y));
             }
 
 
