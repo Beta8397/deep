@@ -15,9 +15,9 @@ import java.util.List;
 public class XDrive {
 
     // TODO: Set values of TICKS_PER_INCH, STRAFE_RATIO, TICKS_PER_RAD, and MAX_TICKS_PER_SEC for the actual robot
-    public static final double TICKS_PER_INCH = 33.45; // Ticks per inch (TPI) of forward travel
+    public static final double TICKS_PER_INCH = 33.69; // Ticks per inch (TPI) of forward travel
     public static final double STRAFE_RATIO = 1.0; // Ratio of TPI for strafe to TPI for forward travel
-    public static final double TICKS_PER_RAD = 318.7; // Ticks per radian that robot heading changes
+    public static final double TICKS_PER_RAD = 340.31; // Ticks per radian that robot heading changes
     public static final double MAX_TICKS_PER_SEC = 2500; // Maximum achievable Ticks per Second
     public static final double SQRT2 = Math.sqrt(2);
 

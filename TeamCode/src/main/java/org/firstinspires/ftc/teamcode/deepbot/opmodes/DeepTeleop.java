@@ -62,6 +62,9 @@ public class DeepTeleop extends XDriveTele {
 
             // handle drive train
             oneDriveCycle();
+            telemetry.addData("ticks", "bl %d  fl %d  fr %d  br %d",
+                    bot.bl.getCurrentPosition(), bot.fl.getCurrentPosition(),
+                    bot.fr.getCurrentPosition(), bot.br.getCurrentPosition());
 
             // handle arm angle and slide length
             if (toggleA2.update()) {
