@@ -49,7 +49,7 @@ public class HighBucket3 extends DeepBotAuto {
 
         dropSampleInBucket2();
 
-        // retract slide and wiat until less than 24 inches
+        // retract slide and wait until less than 24 inches
 
         bot.slideMotor.getCurrentPosition();
         bot.setSlideInches(16);
@@ -78,7 +78,9 @@ public class HighBucket3 extends DeepBotAuto {
 
         driveTo(fast, targetX, bot.getPose().y, 90, 0.5);
         Pose pose1 = new Pose(targetX, bot.getPose().y, bot.getPose().h);
-        Pose pose2 = new Pose(targetX, 31, Math.toRadians(90));
+        Pose pose2 = new Pose(targetX, 31
+
+                , Math.toRadians(90));
         driveLine(normalSpeed, pose1, pose2, 0.5);
 
         // grab second sample from floor

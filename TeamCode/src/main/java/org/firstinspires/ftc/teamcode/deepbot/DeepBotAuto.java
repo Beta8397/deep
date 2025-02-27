@@ -106,7 +106,7 @@ public abstract class DeepBotAuto extends XDriveAuto {
         }
         bot.setWristPosition(0.8);
         sleep(600);
-        bot.setClawPosition(DeepBot.CLAW_OPEN);
+        bot.setClawPosition(DeepBot.CLAW_WIDE_OPEN);
         sleep(500);
     }
 
@@ -121,7 +121,7 @@ public abstract class DeepBotAuto extends XDriveAuto {
     public void dropSampleInBucket(){
 //        bot.setWristPosition(0.9);
 //        sleep(800);
-        bot.setClawPosition(DeepBot.CLAW_OPEN);
+        bot.setClawPosition(DeepBot.CLAW_WIDE_OPEN);
         sleep(500);
         bot.setWristPosition(0.25);
         sleep(300);
@@ -131,7 +131,7 @@ public abstract class DeepBotAuto extends XDriveAuto {
     public void dropSampleInBucket2(){
 //        bot.setWristPosition(0.9);
 //        sleep(800);
-        bot.setClawPosition(DeepBot.CLAW_OPEN);
+        bot.setClawPosition(DeepBot.CLAW_WIDE_OPEN);
         sleep(300);
         bot.setWristPosition(0.25);
         sleep(300);
@@ -189,7 +189,8 @@ public abstract class DeepBotAuto extends XDriveAuto {
         bot.setWristPosition(0.5);
     }
 
-    public void deliverSpecimen(){
+    public void
+    deliverSpecimen(){
         bot.setArmDegrees(23);
         while (opModeIsActive() && armBusy() ) continue;
         bot.setSlideInches(16);

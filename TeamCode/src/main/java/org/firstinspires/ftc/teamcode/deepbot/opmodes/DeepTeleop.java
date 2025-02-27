@@ -36,7 +36,7 @@ public class DeepTeleop extends XDriveTele {
     enum  YawState{LEFT, MID, RIGHT, CUSTOM};
     YawState yawState = YawState.MID;
 
-    private static final double WRIST_P0 = 0.9;
+    private static final double WRIST_P0 = 0.88; // Servo setting when wrist is parallel to arm
 
     private static final double WRIST_GAIN = -265;
     private static final double DEFAULT_WRIST_ANGLE = 0;
@@ -109,9 +109,9 @@ public class DeepTeleop extends XDriveTele {
             } else if (dpu2Toggled) {
                 bot.setTargetArmAngleSafe(67);
             } else if (dpl2Toggled) {
-                bot.setTargetArmAngleSafe(37.1);  // was 34
+                bot.setTargetArmAngleSafe(54);  // was 39.1
             } else if (dpd2Toggled) {
-                bot.setTargetArmAngleSafe(-13.5);  // was 20
+                bot.setTargetArmAngleSafe(-16.5);  // was 13.5
             } else if (loweringArm){
                 if (currentArmLength < 24) {
                     bot.setTargetArmAngleSafe(-26);
@@ -128,7 +128,7 @@ public class DeepTeleop extends XDriveTele {
             } else if (dpu2Toggled) {
                 bot.setTargetSlideLengthSafe(42);
             } else if (dpl2Toggled) {
-                bot.setTargetSlideLengthSafe(20.2);  // was 22
+                bot.setTargetSlideLengthSafe(20.1);  // was 22
             } else if (dpd2Toggled) {
                 bot.setTargetSlideLengthSafe(20.5);  // was 20
             } else if (loweringArm){
@@ -233,9 +233,9 @@ public class DeepTeleop extends XDriveTele {
             } else if (dpu2Toggled && !resettingArm){
                 targetWristAngle = DEFAULT_WRIST_ANGLE;
             } else if (dpl2Toggled && !resettingArm){
-                targetWristAngle = DEFAULT_WRIST_ANGLE + 90;
+                targetWristAngle = 54; // was DEFAULT_WRIST_ANGLE +90
             } else if (dpd2Toggled && !resettingArm){
-                targetWristAngle = DEFAULT_WRIST_ANGLE +90;
+                targetWristAngle = DEFAULT_WRIST_ANGLE +100; // was 90
             }else if (loweringArm && !resettingArm) {
                 targetWristAngle = DEFAULT_WRIST_ANGLE + 90;
             } else if (justStoppedLoweringArm && !resettingArm){
