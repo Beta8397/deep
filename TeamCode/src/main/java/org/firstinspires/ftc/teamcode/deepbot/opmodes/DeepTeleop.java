@@ -49,11 +49,12 @@ public class DeepTeleop extends XDriveTele {
 
     @Override
     public void runOpMode(){
-        bot.init(hardwareMap);
+        bot.init(hardwareMap, false);
         super.setBot(bot);
         bot.setPose(SavedData.pose.x,SavedData.pose.y,Math.toDegrees(SavedData.pose.h));
 
         bot.openClaw();
+
 
         waitForStart();
 
@@ -126,7 +127,8 @@ public class DeepTeleop extends XDriveTele {
             if (resettingArm){
                 bot.setTargetSlideLengthUnSafe(targetArmLength - gamepad2.right_stick_y * 0.8);
             } else if (dpu2Toggled) {
-                bot.setTargetSlideLengthSafe(42);
+                bot.setTargetSlideLengthSafe(40);
+                //changed 42 to 40
             } else if (dpl2Toggled) {
                 bot.setTargetSlideLengthSafe(20.1);  // was 22
             } else if (dpd2Toggled) {

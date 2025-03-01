@@ -49,14 +49,15 @@ public class DeepBot extends XDrive {
     public static final double CLAW_OPEN = 0.20;  // was 0.16
     
     public static final double  CLAW_WIDE_OPEN = 0.3;
-    public static final double CLAW_CLOSED = 0.03;
+    public static final double CLAW_CLOSED = 0.04;
+    //change 0.03 to 0.04
     public static final double YAW_STRAIGHT = 0.414;
     public static final double YAW_LEFT = 0.744;
     public static final double YAW_RIGHT = 0.081;
 
 
-    @Override
-    public void init(HardwareMap hwMap) {
+
+    public void init(HardwareMap hwMap, boolean resetArmAndSlide) {
         super.init(hwMap);
 
         armMotor = hwMap.get(DcMotorEx.class, "arm_motor");
@@ -65,11 +66,22 @@ public class DeepBot extends XDrive {
         armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         slideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if (resetArmAndSlide) {
+            armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        armMotor.setTargetPosition(0);
-        slideMotor.setTargetPosition(0);
+            armMotor.setTargetPosition(0);
+            slideMotor.setTargetPosition(0);
+        } else {
+            armMotor.getCurrentPosition();
+            slideMotor.getCurrentPosition();
+            int armPosition = armMotor.getCurrentPosition();
+            int slidePosition = slideMotor.getCurrentPosition();
+            armMotor.setTargetPosition(armPosition);
+            slideMotor.setTargetPosition(slidePosition);
+            targetArmAngle = armDegreesFromTicks(armPosition);
+            targetSlideLength = slideInchesFromTicks(slidePosition);
+        }
 
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -78,6 +90,7 @@ public class DeepBot extends XDrive {
         slideMotor.setTargetPositionTolerance(10);
 
         slideMotor.setPower(1);
+        if (!resetArmAndSlide) armMotor.setPower(1);
 
         winchMotor = hwMap.get(DcMotorEx.class,"winchMotor");
         winchMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -93,8 +106,10 @@ public class DeepBot extends XDrive {
         distLeft = hwMap.get(DistanceSensor.class, "left_dist");
         distBack = hwMap.get(DistanceSensor.class, "back_dist");
         sonicLeft = hwMap.get(MaxSonarModified.class, "Sonic");
+    }
 
-
+    public void init(HardwareMap hwMap){
+        init(hwMap, true);
     }
 
     public void resetArm() {

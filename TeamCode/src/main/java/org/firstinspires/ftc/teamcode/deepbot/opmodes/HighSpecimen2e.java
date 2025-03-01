@@ -9,8 +9,7 @@ import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
 import org.firstinspires.ftc.teamcode.deepbot.DeepBotAuto;
 
 @Autonomous
-@Disabled
-public class HighSpecimen2d extends DeepBotAuto {
+public class HighSpecimen2e extends DeepBotAuto {
 
     DeepBot bot = new DeepBot();
     boolean stopEarly = true;
@@ -26,22 +25,18 @@ public class HighSpecimen2d extends DeepBotAuto {
 
         // Set arm and deposit first specimen
 
-        setArmForSpecimenHang3();
+        setArmForSpecimenHang4();
 
         driveTo(fast, -4,12, 90, 1);
         while(opModeIsActive() && armBusy()) continue;
         driveTo(fast, -4, 44, 90,0.5);
 
 
-        deliverSpecimen();
+        deliverSpecimen2();
         bot.openClaw();
         sleep(300);
-        bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH);
 
-
-        // Drive to sample on spike mark
-
-
+        // drive to pickup next specimen from wall
 
         bot.setPose(bot.getPose().x, 41, 90);
         driveTo(fast, bot.getPose().x, 30, 90, 1);
@@ -50,8 +45,6 @@ public class HighSpecimen2d extends DeepBotAuto {
         while (opModeIsActive() && armBusy()) continue;
 
         driveTo(fast, 48, 30, 90, 1);
-//        driveTo(fast, 32, 60, 90, 1);
-//        driveTo(normalSpeed, 47.5, 60, 90, 1);
         turnTo(-90, 120, 12, 2);
         double x = 64.8 - bot.sonicLeft.getDistanceSync(25, DistanceUnit.INCH);
         if (Math.abs(x - bot.getPose().x) < 8){
@@ -59,7 +52,6 @@ public class HighSpecimen2d extends DeepBotAuto {
             driveTo(normalSpeed, 48.5, 30, -90, 0.5);
         }
 
-//        TODO: use left distance sensor to adjust x and adjust bot position
 
 
         // drive into alliance wall and reset pose
@@ -70,21 +62,21 @@ public class HighSpecimen2d extends DeepBotAuto {
         // backup, set arm position, pickup specimen from wall
 
         driveTo(normalSpeed, 48.5, 26, -90, 1);
-        setArmForWallPickup();
+        setArmForWallPickup2();
         ElapsedTime et = new ElapsedTime();
         while (opModeIsActive() && (armBusy() || slideBusy() || et.milliseconds()< 500)) continue;
 
         driveTo(normalSpeed, 48.5, 19, -90, .5);
         bot.closeClaw();
         sleep(1000);
-        setArmForSpecimenHang3();
+        setArmForSpecimenHang4();
 
         // hangs second specimen
 
         driveTo(fast, 2, 21,-90,1);
         turnTo(90, 120, 12, 2);
         driveTo(fast, 2, 43, 90, 0.5);
-        deliverSpecimen();
+        deliverSpecimen2();
         bot.openClaw();
         bot.setPose(bot.getPose().x, 41, Math.toDegrees(bot.getPose().h));
         sleep(300);

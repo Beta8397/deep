@@ -177,6 +177,13 @@ public abstract class DeepBotAuto extends XDriveAuto {
         bot.openClaw();
     }
 
+    public void setArmForWallPickup2(){
+        bot.setSlideInches(20);
+        bot.setArmDegrees(-15);
+        bot.setWristPosition(0.45);
+        bot.openClaw();
+    }
+
     public void setArmForSpecimenHang1(){
         bot.setArmDegrees(21);
         bot.setSlideInches(20);
@@ -196,11 +203,22 @@ public abstract class DeepBotAuto extends XDriveAuto {
         bot.setSlideInches(16);
     }
 
+    public void deliverSpecimen2(){
+        bot.setArmDegrees(10);
+        while (opModeIsActive() && armBusy()) continue;
+    }
+
 
     public void setArmForSpecimenHang3(){
         bot.setArmDegrees(55);
         bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH);
         bot.setWristPosition(0.7);
+    }
+
+    public void  setArmForSpecimenHang4(){
+        bot.setArmDegrees(42.6);
+        bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH);
+        bot.setWristPosition(0.6);
     }
 
 
