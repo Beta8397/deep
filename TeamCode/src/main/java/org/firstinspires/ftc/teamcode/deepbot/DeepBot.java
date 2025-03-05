@@ -49,7 +49,7 @@ public class DeepBot extends XDrive {
     public static final double CLAW_OPEN = 0.20;  // was 0.16
     
     public static final double  CLAW_WIDE_OPEN = 0.3;
-    public static final double CLAW_CLOSED = 0.04;
+    public static final double CLAW_CLOSED = 0.03;
     //change 0.03 to 0.04
     public static final double YAW_STRAIGHT = 0.414;
     public static final double YAW_LEFT = 0.744;

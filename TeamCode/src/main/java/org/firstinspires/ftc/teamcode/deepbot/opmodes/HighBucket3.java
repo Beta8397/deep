@@ -60,7 +60,7 @@ public class HighBucket3 extends DeepBotAuto {
 
         // set arm and wrist to pickup sample from floor
 
-        bot.setArmDegrees(-36);
+        bot.setArmDegrees(-35.5);
         bot.setWristPosition(0.7); // was 0.764
         bot.slideMotor.getCurrentPosition();
         bot.armMotor.getCurrentPosition();
@@ -78,13 +78,16 @@ public class HighBucket3 extends DeepBotAuto {
 
         driveTo(fast, targetX, bot.getPose().y, 90, 0.5);
         Pose pose1 = new Pose(targetX, bot.getPose().y, bot.getPose().h);
-        Pose pose2 = new Pose(targetX, 31
-
-                , Math.toRadians(90));
+        Pose pose2 = new Pose(targetX, 31.5, Math.toRadians(90));
         driveLine(normalSpeed, pose1, pose2, 0.5);
 
         // grab second sample from floor
 
+        bot.setArmDegrees(-36.5);
+        bot.armMotor.getCurrentPosition();
+        while (opModeIsActive()){
+            if (!armBusy() ) break;
+        }
         bot.setWristPosition(0.764);
         sleep(200);
         bot.setClawPosition(DeepBot.CLAW_CLOSED);
@@ -96,7 +99,7 @@ public class HighBucket3 extends DeepBotAuto {
 
         // drive to bucket with second sample
 
-        driveTo(fast, -55.5, 19.5, 90, 1);
+        driveTo(fast, -55.5, 20.5, 90, 1);
         if (bot.getArmAngle()> 45){
             bot.setSlideInches(44);
         }
@@ -125,7 +128,7 @@ public class HighBucket3 extends DeepBotAuto {
 
         // set arm and wrist to pickup third sample form floor, then wait for arm and slide
 
-        bot.setArmDegrees(-36);
+        bot.setArmDegrees(-35.5);
         bot.setWristPosition(0.7); // was 0.764
         bot.slideMotor.getCurrentPosition();
         bot.armMotor.getCurrentPosition();
@@ -143,11 +146,15 @@ public class HighBucket3 extends DeepBotAuto {
 
         driveTo(normalSpeed, targetX, bot.getPose().y, 90, 0.5);
         pose1 = new Pose(targetX, bot.getPose().y, bot.getPose().h);
-        pose2 = new Pose(targetX, 31, Math.toRadians(90));
+        pose2 = new Pose(targetX, 31.5, Math.toRadians(90));
         driveLine(normalSpeed, pose1, pose2, 0.5);
 
         // pick up third sample
-
+        bot.setArmDegrees(-36.5);
+        bot.armMotor.getCurrentPosition();
+        while (opModeIsActive()){
+            if (!armBusy()) break;
+        }
         bot.setWristPosition(0.764);
         sleep(200);
         bot.setClawPosition(DeepBot.CLAW_CLOSED);
@@ -159,7 +166,7 @@ public class HighBucket3 extends DeepBotAuto {
 
         // driving to bucket with third sample
 
-        driveTo(fast, -56.5, 18.5, 90, 1);
+        driveTo(fast, -56.5, 19.5, 90, 1);
         if (bot.getArmAngle()>45){
             bot.setSlideInches(44);
         }
