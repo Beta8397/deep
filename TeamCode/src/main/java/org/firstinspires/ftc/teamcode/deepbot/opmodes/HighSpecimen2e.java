@@ -56,7 +56,8 @@ public class HighSpecimen2e extends DeepBotAuto {
 
         // drive into alliance wall and reset pose
 
-        driveTo(normalSpeed, 48.5, 3, -90, 1);
+        driveTo(normalSpeed, 48.5, 5, -90, 1);
+        // changed target Y from 3
         bot.setPose(bot.getPose().x, 7.5, -90);
 
         // backup, set arm position, pickup specimen from wall
