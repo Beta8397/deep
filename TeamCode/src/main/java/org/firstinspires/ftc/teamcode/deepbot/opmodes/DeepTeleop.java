@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.deepbot.opmodes;
 
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.ManualControlOpMode;
@@ -51,6 +54,9 @@ public class DeepTeleop extends XDriveTele {
     public void runOpMode(){
         bot.init(hardwareMap, false);
         super.setBot(bot);
+
+
+
         bot.setPose(SavedData.pose.x,SavedData.pose.y,Math.toDegrees(SavedData.pose.h));
 
         bot.openClaw();
@@ -145,7 +151,6 @@ public class DeepTeleop extends XDriveTele {
             telemetry.addData("targetlength", targetArmLength);
             telemetry.addData("armdegrees", currentArmAngle);
             telemetry.addData("slideinches", currentArmLength);
-            telemetry.addData("LeftDist", bot.getLeftDistance());
 
 
             telemetry.addData("arm current", bot.armMotor.getCurrent(CurrentUnit.AMPS));
@@ -305,9 +310,9 @@ public class DeepTeleop extends XDriveTele {
 
 
             // report distances
-            telemetry.addData("leftdistance", bot.getLeftDistance());
-            telemetry.addData("backdistance", bot.getBackDistance());
-           telemetry.addData("sonic distance", bot.sonicLeft.getDistanceAsync(50, DistanceUnit.INCH));
+//            telemetry.addData("leftdistance", bot.getLeftDistance());
+//            telemetry.addData("backdistance", bot.getBackDistance());
+//           telemetry.addData("sonic distance", bot.sonicLeft.getDistanceAsync(50, DistanceUnit.INCH));
             telemetry.addData("winch ticks",
                     bot.winchMotor.getCurrentPosition());
 

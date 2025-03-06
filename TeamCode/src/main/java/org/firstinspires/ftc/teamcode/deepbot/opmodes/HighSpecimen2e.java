@@ -80,6 +80,7 @@ public class HighSpecimen2e extends DeepBotAuto {
         bot.openClaw();
         bot.setPose(bot.getPose().x, 41, Math.toDegrees(bot.getPose().h));
         sleep(300);
+
         bot.setSlideInches(DeepBot.SLIDE_BASE_LENGTH);
 
         // park!
@@ -87,6 +88,7 @@ public class HighSpecimen2e extends DeepBotAuto {
         driveTo(fast, 12, 16, 90, 1);
         bot.setArmDegrees(DeepBot.MIN_ARM_DEGREES);
         driveTo(fast, 60, 16, 90, 1);
+        driveTo(fast, 60, 10, 90, 1);
 
 
 

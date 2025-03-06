@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.deepbot.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.deepbot.DeepBot;
@@ -8,6 +9,7 @@ import org.firstinspires.ftc.teamcode.deepbot.DeepBotAuto;
 import org.firstinspires.ftc.teamcode.util.Pose;
 
 @Autonomous
+@Disabled
 public class HighSpecimen2b extends DeepBotAuto {
 
     DeepBot bot = new DeepBot();

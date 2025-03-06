@@ -57,7 +57,7 @@ public class DeepBot extends XDrive {
 
 
 
-    public void init(HardwareMap hwMap, boolean resetArmAndSlide) {
+    public void init(HardwareMap hwMap, boolean autonomous) {
         super.init(hwMap);
 
         armMotor = hwMap.get(DcMotorEx.class, "arm_motor");
@@ -66,12 +66,16 @@ public class DeepBot extends XDrive {
         armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         slideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        if (resetArmAndSlide) {
+        if (autonomous) {
             armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             armMotor.setTargetPosition(0);
             slideMotor.setTargetPosition(0);
+            distLeft = hwMap.get(DistanceSensor.class, "left_dist");
+            distBack = hwMap.get(DistanceSensor.class, "back_dist");
+            sonicLeft = hwMap.get(MaxSonarModified.class, "Sonic");
+
         } else {
             armMotor.getCurrentPosition();
             slideMotor.getCurrentPosition();
@@ -90,7 +94,7 @@ public class DeepBot extends XDrive {
         slideMotor.setTargetPositionTolerance(10);
 
         slideMotor.setPower(1);
-        if (!resetArmAndSlide) armMotor.setPower(1);
+        if (!autonomous) armMotor.setPower(1);
 
         winchMotor = hwMap.get(DcMotorEx.class,"winchMotor");
         winchMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -103,9 +107,6 @@ public class DeepBot extends XDrive {
         clawServo = hwMap.get(Servo.class, "clawServo");
         yawServo = hwMap.get(Servo.class, "yawServo");
 
-        distLeft = hwMap.get(DistanceSensor.class, "left_dist");
-        distBack = hwMap.get(DistanceSensor.class, "back_dist");
-        sonicLeft = hwMap.get(MaxSonarModified.class, "Sonic");
     }
 
     public void init(HardwareMap hwMap){
