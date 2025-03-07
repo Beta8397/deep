@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.util.SavedData;
 
 @Autonomous
 
-public class HighBucket3 extends DeepBotAuto {
+public class HighBucket3b extends DeepBotAuto {
 
     DeepBot bot = new DeepBot();
 
@@ -26,11 +26,11 @@ public class HighBucket3 extends DeepBotAuto {
 
         // drives to basket
 
-        driveTo(fast, -31, 16.7, 180, 1);
+        driveTo(fast, -31, 17.7, 180, 1);
         if (bot.getArmAngle()> 45){ // extends slide if arm is !busy
             bot.setSlideInches(44);
         }
-        driveTo(fast, -53.3, 16.7, 180, 1);
+        driveTo(fast, -52.3, 17.7, 180, 1);
         if (bot.getArmAngle()> 45){ // extends slide if arm is !busy
             bot.setSlideInches(44);
         }
@@ -78,7 +78,7 @@ public class HighBucket3 extends DeepBotAuto {
 
         driveTo(fast, targetX, bot.getPose().y, 90, 0.5);
         Pose pose1 = new Pose(targetX, bot.getPose().y, bot.getPose().h);
-        Pose pose2 = new Pose(targetX, 32, Math.toRadians(90));
+        Pose pose2 = new Pose(targetX, 33, Math.toRadians(90));
         driveLine(normalSpeed, pose1, pose2, 0.5);
 
         // grab second sample from floor
@@ -92,6 +92,7 @@ public class HighBucket3 extends DeepBotAuto {
         sleep(200);
         bot.setClawPosition(DeepBot.CLAW_CLOSED);
         sleep(300);
+        bot.setPose(-49, 32, Math.toDegrees(bot.getPose().h));
 
         // raising the arm to deliver second sample
 
@@ -99,7 +100,7 @@ public class HighBucket3 extends DeepBotAuto {
 
         // drive to bucket with second sample
 
-        driveTo(fast, -55.5, 20.5, 90, 1);
+        driveTo(fast, -53.5, 19.5, 90, 1);
         if (bot.getArmAngle()> 45){
             bot.setSlideInches(44);
         }
@@ -159,6 +160,7 @@ public class HighBucket3 extends DeepBotAuto {
         sleep(200);
         bot.setClawPosition(DeepBot.CLAW_CLOSED);
         sleep(300);
+        bot.setPose(-59, 32, Math.toDegrees(bot.getPose().h));
 
         // sets arm to drop off third sample
 
@@ -166,7 +168,7 @@ public class HighBucket3 extends DeepBotAuto {
 
         // driving to bucket with third sample
 
-        driveTo(fast, -56.5, 19.5, 90, 1);
+        driveTo(fast, -54.5, 20.5, 90, 1);
         if (bot.getArmAngle()>45){
             bot.setSlideInches(44);
         }

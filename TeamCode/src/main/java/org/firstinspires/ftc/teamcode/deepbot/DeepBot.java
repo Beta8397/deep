@@ -73,7 +73,7 @@ public class DeepBot extends XDrive {
             armMotor.setTargetPosition(0);
             slideMotor.setTargetPosition(0);
             distLeft = hwMap.get(DistanceSensor.class, "left_dist");
-            distBack = hwMap.get(DistanceSensor.class, "back_dist");
+//            distBack = hwMap.get(DistanceSensor.class, "back_dist");
             sonicLeft = hwMap.get(MaxSonarModified.class, "Sonic");
 
         } else {
